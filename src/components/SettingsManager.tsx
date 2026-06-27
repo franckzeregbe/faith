@@ -108,7 +108,7 @@ export default function SettingsManager() {
     fs_visits: 'Visites',
     fs_cults: 'Cultes',
     pastoral_contacts: 'Contacts',
-    faith_converts: 'Nouvelles âmes',
+    faith_converts: 'Âmes',
     faith_sermons: 'Prédications',
     faith_prayers: 'Prières',
     faith_birthdays: 'Anniversaires',

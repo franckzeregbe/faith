@@ -18,7 +18,7 @@ const NAV_ITEMS = [
   { id: 'visites', label: 'Visites', icon: '📋', desc: 'Planifier & exporter' },
   { id: 'cultes', label: 'Cultes', icon: '⛪', desc: 'Récurrents & iCal' },
   { id: 'contacts', label: 'Contacts', icon: '👥', desc: 'Annuaire pastoral' },
-  { id: 'converts', label: 'Nouvelles âmes', icon: '🕊️', desc: 'Âmes gagnées à Jésus' },
+  { id: 'converts', label: 'Âmes', icon: '🕊️', desc: 'Âmes gagnées à Jésus' },
   { id: 'sermons', label: 'Prédications', icon: '📖', desc: 'Sermons & notes' },
   { id: 'prayers', label: 'Prières', icon: '🙏', desc: 'Suivi des demandes' },
   { id: 'birthdays', label: 'Anniversaires', icon: '🎂', desc: 'Dates des membres' },
