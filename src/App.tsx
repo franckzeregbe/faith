@@ -5,6 +5,9 @@ import CultManager from './components/CultManager'
 import ContactManager from './components/ContactManager'
 import DailyPostGenerator from './components/DailyPostGenerator'
 import ProfileManager from './components/ProfileManager'
+import SermonManager from './components/SermonManager'
+import PrayerManager from './components/PrayerManager'
+import BirthdayManager from './components/BirthdayManager'
 import { loadJsonFromStorage } from './utils/storage'
 import type { Profile } from './types'
 
@@ -13,6 +16,9 @@ const NAV_ITEMS = [
   { id: 'visites', label: 'Visites', icon: '📋', desc: 'Planifier & exporter' },
   { id: 'cultes', label: 'Cultes', icon: '⛪', desc: 'Récurrents & iCal' },
   { id: 'contacts', label: 'Contacts', icon: '👥', desc: 'Annuaire pastoral' },
+  { id: 'sermons', label: 'Prédications', icon: '📖', desc: 'Sermons & notes' },
+  { id: 'prayers', label: 'Prières', icon: '🙏', desc: 'Suivi des demandes' },
+  { id: 'birthdays', label: 'Anniversaires', icon: '🎂', desc: 'Dates des membres' },
   { id: 'messages', label: 'Messages', icon: '✉️', desc: 'SMS / WhatsApp / FB' },
   { id: 'posts', label: 'Posts', icon: '📱', desc: 'Contenu quotidien' },
 ] as const
@@ -33,7 +39,7 @@ export default function App() {
     setStats({ visits: visits.length, cults: cults.length, contacts: contacts.length })
   }, [])
 
-  const impactScore = stats.visits * 2 + stats.cults * 3 + stats.contacts
+  const impactScore = Math.min(stats.visits * 2 + stats.cults * 3 + stats.contacts, 100)
   const serviceStreak = 5
 
   const activeNav = NAV_ITEMS.find(n => n.id === activeSection)!
@@ -44,6 +50,9 @@ export default function App() {
       case 'visites': return <VisitManager />
       case 'cultes': return <CultManager />
       case 'contacts': return <ContactManager />
+      case 'sermons': return <SermonManager />
+      case 'prayers': return <PrayerManager />
+      case 'birthdays': return <BirthdayManager />
       case 'messages': return <MessageGenerator />
       case 'posts': return <DailyPostGenerator />
     }
