@@ -1,117 +1,129 @@
-import React, { useMemo, useState } from 'react'
+import React, { useMemo, useState, useEffect } from 'react'
 import VisitManager from './components/VisitManager'
 import MessageGenerator from './components/MessageGenerator'
 import CultManager from './components/CultManager'
 import ContactManager from './components/ContactManager'
 import DailyPostGenerator from './components/DailyPostGenerator'
 import ProfileManager from './components/ProfileManager'
-import ProfileSummary from './components/ProfileSummary'
+import { loadJsonFromStorage } from './utils/storage'
+import type { Profile } from './types'
 
-const sections = [
-  {
-    id: 'profile',
-    title: 'Profil professionnel',
-    description: 'Conservez votre identité, votre église et vos coordonnées pour un usage pro.',
-    component: <ProfileManager />
-  },
-  {
-    id: 'visites',
-    title: 'Visites pastorales',
-    description: 'Ajoutez, planifiez et exportez votre programme de visites.',
-    component: <VisitManager />
-  },
-  {
-    id: 'cultes',
-    title: 'Cultes & cellules',
-    description: 'Créez des cultes récurrents et exportez un calendrier iCal.',
-    component: <CultManager />
-  },
-  {
-    id: 'contacts',
-    title: 'Contacts pastoraux',
-    description: 'Gardez vos frères et sœurs en mémoire et exportez vos listes.',
-    component: <ContactManager />
-  },
-  {
-    id: 'messages',
-    title: 'Générateur de messages',
-    description: 'Créez rapidement des messages courts pour SMS, WhatsApp et réseaux sociaux.',
-    component: <MessageGenerator />
-  },
-  {
-    id: 'posts',
-    title: 'Posts journaliers',
-    description: 'Obtenez un contenu quotidien inspirant, prêt à publier.',
-    component: <DailyPostGenerator />
-  }
-]
+const NAV_ITEMS = [
+  { id: 'profile', label: 'Profil', icon: '👤', desc: 'Identité & église' },
+  { id: 'visites', label: 'Visites', icon: '📋', desc: 'Planifier & exporter' },
+  { id: 'cultes', label: 'Cultes', icon: '⛪', desc: 'Récurrents & iCal' },
+  { id: 'contacts', label: 'Contacts', icon: '👥', desc: 'Annuaire pastoral' },
+  { id: 'messages', label: 'Messages', icon: '✉️', desc: 'SMS / WhatsApp / FB' },
+  { id: 'posts', label: 'Posts', icon: '📱', desc: 'Contenu quotidien' },
+] as const
+
+type SectionId = typeof NAV_ITEMS[number]['id']
 
 export default function App() {
-  const [activeIndex, setActiveIndex] = useState(0)
-  const activeSection = useMemo(() => sections[activeIndex], [activeIndex])
+  const [activeSection, setActiveSection] = useState<SectionId>('profile')
+  const [profile, setProfile] = useState<Profile | null>(null)
+  const [stats, setStats] = useState({ visits: 0, cults: 0, contacts: 0 })
 
-  function goNext() {
-    setActiveIndex((current) => Math.min(current + 1, sections.length - 1))
-  }
+  useEffect(() => {
+    const stored = loadJsonFromStorage<Profile | null>('faith_profile', null)
+    setProfile(stored)
+    const visits = loadJsonFromStorage<any[]>('fs_visits', [])
+    const cults = loadJsonFromStorage<any[]>('fs_cults', [])
+    const contacts = loadJsonFromStorage<any[]>('pastoral_contacts', [])
+    setStats({ visits: visits.length, cults: cults.length, contacts: contacts.length })
+  }, [])
 
-  function goBack() {
-    setActiveIndex((current) => Math.max(current - 1, 0))
-  }
+  const impactScore = stats.visits * 2 + stats.cults * 3 + stats.contacts
+  const serviceStreak = 5
 
-  function jumpTo(index: number) {
-    setActiveIndex(index)
+  const activeNav = NAV_ITEMS.find(n => n.id === activeSection)!
+
+  const renderSection = () => {
+    switch (activeSection) {
+      case 'profile': return <ProfileManager />
+      case 'visites': return <VisitManager />
+      case 'cultes': return <CultManager />
+      case 'contacts': return <ContactManager />
+      case 'messages': return <MessageGenerator />
+      case 'posts': return <DailyPostGenerator />
+    }
   }
 
   return (
-    <div className="app-root">
-      <header className="app-header">
-        <div className="header-grid">
-          <div className="app-hero">
-            <div className="app-logo">FAITH</div>
-            <div className="app-hero-text">
-              <p className="app-tag">Gestion pastorale structurée</p>
-              <h1>FAITH — Gestion pastorale</h1>
-              <p className="app-subtitle">Tous tes outils pastoraux dans une interface claire.</p>
-            </div>
-          </div>
-          <div className="app-header-summary">
-            <ProfileSummary />
+    <div className="app-shell">
+      <aside className="app-sidebar">
+        <div className="sidebar-logo">
+          <div className="sidebar-logo-icon">FOI</div>
+          <div className="sidebar-logo-text">
+            <strong>FAITH</strong>
+            <small>Gestion pastorale</small>
           </div>
         </div>
-      </header>
 
-      <main className="app-main">
-        <div className="section-nav">
-          {sections.map((section, index) => (
+        <div className="nav-section">
+          {NAV_ITEMS.map(item => (
             <button
-              key={section.id}
+              key={item.id}
               type="button"
-              className={`step-button ${index === activeIndex ? 'active' : ''}`}
-              onClick={() => jumpTo(index)}
+              className={`nav-item ${item.id === activeSection ? 'active' : ''}`}
+              onClick={() => setActiveSection(item.id)}
             >
-              <strong>{section.title}</strong>
+              <span className="nav-icon">{item.icon}</span>
+              <span>{item.label}</span>
             </button>
           ))}
         </div>
+      </aside>
 
-        <section className="section-card active-section">
-          <div className="section-header">
-            <h2>{activeSection.title}</h2>
-            <p>{activeSection.description}</p>
+      <main className="app-content">
+        <div className="app-header">
+          <div>
+            <h1>{activeNav.label}</h1>
+            <p>{activeNav.desc}</p>
           </div>
-          {activeSection.component}
-          <div className="wizard-actions">
-            <button type="button" className="secondary" onClick={goBack} disabled={activeIndex === 0}>
-              Précédent
-            </button>
-            <button type="button" onClick={goNext}>
-              {activeIndex < sections.length - 1 ? 'Suivant' : 'Terminé'}
-            </button>
+
+          {profile?.name && (
+            <div className="profile-badge">
+              <div className="profile-badge-img">
+                {profile.photoUrl ? <img src={profile.photoUrl} alt="" /> : '📷'}
+              </div>
+              <div className="profile-badge-info">
+                <span className="name">{profile.name}</span>
+                <span className="role">{profile.role} • {profile.church}</span>
+                <span className="stats">
+                  {stats.visits} visites · {stats.cults} cultes · {stats.contacts} contacts
+                </span>
+                <span className="impact">Score {impactScore} · {serviceStreak} jours</span>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {activeSection === 'profile' && (
+          <div className="dashboard-grid">
+            <div className="stat-card">
+              <div className="stat-card-icon score">🔥</div>
+              <div className="stat-card-body">
+                <span className="stat-label">Score d'impact</span>
+                <span className="stat-value">{impactScore}%</span>
+                <span className="stat-sub">Continue d'avancer dans le service</span>
+              </div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-card-icon streak">⭐</div>
+              <div className="stat-card-body">
+                <span className="stat-label">Flamme de service</span>
+                <span className="stat-value">{serviceStreak} jours</span>
+                <span className="stat-sub">Garde le rythme avec Jésus</span>
+              </div>
+            </div>
           </div>
+        )}
+
+        <section className="section-card">
+          {renderSection()}
         </section>
       </main>
-
-      <footer className="app-footer">« Que tout ce que vous faites soit fait avec amour, en servant le Seigneur et non les hommes. » — inspiré de 1 Corinthiens 16:14</footer>
     </div>
   )
 }
