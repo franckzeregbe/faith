@@ -87,6 +87,7 @@ export default function App() {
               className={`nav-item ${item.id === activeSection ? 'active' : ''}`}
               onClick={() => setActiveSection(item.id)}
             >
+              <span className="nav-icon">{item.icon}</span>
               <span>{item.label}</span>
             </button>
           ))}
