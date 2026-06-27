@@ -41,3 +41,8 @@ Support hors-ligne
 Notes supplémentaires
 - Pour activer les notifications web dans un navigateur, autorisez les notifications lors du chargement du composant de culte.
 - Le projet peut évoluer vers un stockage SQLite natif en ajoutant le plugin Capacitor SQLite.
+
+Intégration GitHub
+- Le projet est maintenant connecté à GitHub : `https://github.com/franckzeregbe/faith`
+- Un workflow GitHub Actions (`.github/workflows/ci.yml`) vérifie `npm install` et `npm run build` à chaque push sur `main`.
+- Un hook Git local (`.git/hooks/post-commit`) est installé pour pousser automatiquement après chaque commit local.
