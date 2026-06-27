@@ -145,12 +145,7 @@ body {
   font-weight: 700;
 }
 
-.nav-item .nav-icon {
-  font-size: 1.2rem;
-  width: 24px;
-  text-align: center;
-  flex-shrink: 0;
-}
+
 
 /* Main content */
 .app-content {
@@ -725,124 +720,43 @@ button {
   margin-top: 8px;
 }
 
-/* ===== HAMBURGER ===== */
-.hamburger-btn {
+/* ===== MOBILE TOP NAV ===== */
+.mobile-topbar {
   display: none;
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  padding: 8px;
-  cursor: pointer;
-  color: var(--text);
-  position: fixed;
-  top: 12px;
-  left: 12px;
-  z-index: 200;
-  width: 44px;
-  height: 44px;
-  align-items: center;
-  justify-content: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
   background: var(--surface);
-  border-radius: var(--radius-sm);
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-light);
+  padding: 8px 12px;
 }
 
-.mobile-header {
-  display: none;
-}
-
-.sidebar-backdrop {
-  display: none;
+.mobile-nav-select {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--surface-alt);
+  font-family: var(--font);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238d7f70' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
 }
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
-  .hamburger-btn {
-    display: flex;
-    position: fixed;
-    top: 10px;
-    left: 10px;
-    z-index: 200;
-    width: 40px;
-    height: 40px;
-  }
-
-  .mobile-header {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 8px 16px 8px 54px;
-    min-height: 44px;
-    background: var(--bg);
-    border-bottom: 1px solid var(--border-light);
-    position: sticky;
-    top: 0;
-    z-index: 50;
-    font-size: 0.95rem;
-    font-weight: 700;
-    color: var(--text);
-    letter-spacing: 0.04em;
-  }
-
   .app-sidebar {
-    position: fixed;
-    top: 0;
-    left: -280px;
-    width: 280px;
-    bottom: 0;
-    z-index: 300;
-    border-right: 1px solid var(--border);
-    transition: left 0.25s ease;
-    box-shadow: var(--shadow-lg);
-    padding: 16px 10px;
-    flex-direction: column;
-    background: var(--surface);
-  }
-
-  .app-sidebar.open {
-    left: 0;
-  }
-
-  .sidebar-backdrop {
-    display: block;
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.45);
-    z-index: 299;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.25s ease;
-  }
-
-  .sidebar-backdrop.open {
-    opacity: 1;
-    pointer-events: auto;
-  }
-
-  .sidebar-logo {
-    padding: 4px 4px 14px;
-  }
-
-  .sidebar-logo svg {
-    max-height: 36px;
-  }
-
-  .nav-section {
-    flex-direction: column;
-    gap: 1px;
-  }
-
-  .nav-item {
-    padding: 14px 14px;
-    font-size: 0.95rem;
-    width: 100%;
-    flex: none;
-    border-radius: var(--radius-sm);
-  }
-
-  .nav-item .nav-icon {
     display: none;
+  }
+
+  .mobile-topbar {
+    display: block;
   }
 
   .app-content {
