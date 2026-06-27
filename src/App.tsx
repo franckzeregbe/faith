@@ -35,6 +35,7 @@ export default function App() {
   const [unlocked, setUnlocked] = useState(false)
   const [activeSection, setActiveSection] = useState<SectionId>('home')
   const [profile, setProfile] = useState<Profile | null>(null)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   useEffect(() => {
     const stored = loadJsonFromStorage<Profile | null>('faith_profile', null)
@@ -48,6 +49,7 @@ export default function App() {
 
   function navigateTo(id: string) {
     setActiveSection(id as SectionId)
+    setSidebarOpen(false)
   }
 
   const activeNav = NAV_ITEMS.find(n => n.id === activeSection)!
@@ -73,15 +75,21 @@ export default function App() {
   }
 
   return (
-    <div className="app-shell">
-      {/* Sidebar (desktop) */}
-      <aside className="app-sidebar">
-        <div className="sidebar-logo" style={{ cursor: 'pointer' }} onClick={() => setActiveSection('settings')}>
-          <div className="sidebar-logo-icon">FOI</div>
-          <div className="sidebar-logo-text">
-            <strong>FAITH</strong>
-            <small>Gestion pastorale</small>
-          </div>
+    <div className={`app-shell ${sidebarOpen ? 'sidebar-open' : ''}`}>
+      <div className={`mobile-backdrop ${sidebarOpen ? 'visible' : ''}`} onClick={() => setSidebarOpen(false)} />
+      <div className="mobile-topbar">
+        <button type="button" className="mobile-menu-btn" onClick={() => setSidebarOpen(open => !open)}>
+          ☰
+        </button>
+        <div className="mobile-topbar-brand">
+          <Logo size={30} />
+        </div>
+      </div>
+
+      {/* Sidebar (desktop + mobile drawer) */}
+      <aside className={`app-sidebar ${sidebarOpen ? 'open' : ''}`}>
+        <div className="sidebar-logo" style={{ cursor: 'pointer' }} onClick={() => navigateTo('settings')}>
+          <Logo size={40} />
         </div>
         <div className="nav-section">
           {NAV_ITEMS.map(item => (
@@ -89,7 +97,7 @@ export default function App() {
               key={item.id}
               type="button"
               className={`nav-item ${item.id === activeSection ? 'active' : ''}`}
-              onClick={() => setActiveSection(item.id)}
+              onClick={() => navigateTo(item.id)}
             >
               <span className="nav-icon">{item.icon}</span>
               <span>{item.label}</span>
@@ -98,14 +106,15 @@ export default function App() {
         </div>
       </aside>
 
-
-
       <main className="app-content">
         <div className="app-content-inner">
         <div className="app-header">
-          <div>
-            <h1>{activeNav.label}</h1>
-            <p>{activeNav.desc}</p>
+          <div className="header-title-group">
+            <Logo size={54} />
+            <div>
+              <h1>{activeNav.label}</h1>
+              <p>{activeNav.desc}</p>
+            </div>
           </div>
 
           {profile?.name && (

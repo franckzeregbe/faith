@@ -32,6 +32,10 @@ export default function CultManager() {
     if (!title.trim()) return
     const newCult: Cult = { id: Date.now().toString(), title: title.trim(), weekday, time, startDate }
     setCults(current => [...current, newCult])
+    setTitle('Culte')
+    setWeekday(0)
+    setTime('09:00')
+    setStartDate(new Date().toISOString().slice(0, 10))
   }
 
   function updateCult() {
@@ -48,6 +52,7 @@ export default function CultManager() {
 
   return (
     <div>
+      <h2 style={{ marginBottom: 14 }}>Ajouter un nouveau culte</h2>
       <div className="form-row">
         <input value={title} onChange={e => setTitle(e.target.value)} placeholder="Titre du culte" />
       </div>
@@ -57,7 +62,9 @@ export default function CultManager() {
         </select>
         <input type="time" value={time} onChange={e => setTime(e.target.value)} />
         <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} />
-        <button className="btn btn-primary" onClick={addCult} disabled={!title.trim()}>Ajouter culte</button>
+      </div>
+      <div className="form-actions">
+        <button type="button" className="btn btn-primary" onClick={addCult} disabled={!title.trim()}>Ajouter culte</button>
       </div>
 
       <div className="form-actions">
