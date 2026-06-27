@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import Dashboard from './components/Dashboard'
 import VisitManager from './components/VisitManager'
 import MessageGenerator from './components/MessageGenerator'
 import CultManager from './components/CultManager'
@@ -15,6 +16,7 @@ import { loadJsonFromStorage } from './utils/storage'
 import type { Profile } from './types'
 
 const NAV_ITEMS = [
+  { id: 'home', label: 'Accueil', icon: '🏠', desc: 'Tableau de bord' },
   { id: 'profile', label: 'Profil', icon: '👤', desc: 'Identité & église' },
   { id: 'visites', label: 'Visites', icon: '📋', desc: 'Planifier & exporter' },
   { id: 'cultes', label: 'Cultes', icon: '⛪', desc: 'Récurrents & iCal' },
@@ -31,7 +33,7 @@ type SectionId = typeof NAV_ITEMS[number]['id']
 
 export default function App() {
   const [unlocked, setUnlocked] = useState(false)
-  const [activeSection, setActiveSection] = useState<SectionId>('profile')
+  const [activeSection, setActiveSection] = useState<SectionId>('home')
   const [profile, setProfile] = useState<Profile | null>(null)
 
   useEffect(() => {
@@ -44,10 +46,15 @@ export default function App() {
     setProfile(stored)
   }, [activeSection])
 
+  function navigateTo(id: string) {
+    setActiveSection(id as SectionId)
+  }
+
   const activeNav = NAV_ITEMS.find(n => n.id === activeSection)!
 
   const renderSection = () => {
     switch (activeSection) {
+      case 'home': return <Dashboard onNavigate={navigateTo} />
       case 'profile': return <ProfileManager />
       case 'visites': return <VisitManager />
       case 'cultes': return <CultManager />
