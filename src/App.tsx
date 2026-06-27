@@ -3,7 +3,6 @@ import VisitManager from './components/VisitManager'
 import MessageGenerator from './components/MessageGenerator'
 import CultManager from './components/CultManager'
 import ContactManager from './components/ContactManager'
-import DailyPostGenerator from './components/DailyPostGenerator'
 import ProfileManager from './components/ProfileManager'
 import SermonManager from './components/SermonManager'
 import PrayerManager from './components/PrayerManager'
@@ -53,7 +52,6 @@ export default function App() {
       case 'prayers': return <PrayerManager />
       case 'birthdays': return <BirthdayManager />
       case 'messages': return <MessageGenerator />
-      case 'posts': return <DailyPostGenerator />
       case 'settings': return <SettingsManager />
     }
   }
