@@ -30,7 +30,7 @@ export default function Dashboard({ onNavigate }: Props) {
       { label: 'Visites', count: visits.length, icon: '📋', section: 'visites' },
       { label: 'Cultes', count: cults.length, icon: '⛪', section: 'cultes' },
       { label: 'Contacts', count: contacts.length, icon: '👥', section: 'contacts' },
-      { label: 'Âmes', count: converts.length, icon: '🕊️', section: 'converts' },
+      { label: 'Âmes', count: converts.length, icon: '🧑', section: 'converts' },
       { label: 'Sermons', count: sermons.length, icon: '📖', section: 'sermons' },
       { label: 'Prières', count: prayers.length, icon: '🙏', section: 'prayers' },
       { label: 'Anniversaires', count: birthdays.length, icon: '🎂', section: 'birthdays' },
@@ -137,7 +137,7 @@ export default function Dashboard({ onNavigate }: Props) {
       {/* Raccourcis rapides */}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center', marginTop: 4 }}>
         <button className="btn btn-primary btn-sm" onClick={() => onNavigate('visites')}>➕ Visite</button>
-        <button className="btn btn-primary btn-sm" onClick={() => onNavigate('converts')}>🕊️ Nouvelle âme</button>
+        <button className="btn btn-primary btn-sm" onClick={() => onNavigate('converts')}>🧑 Nouvelle âme</button>
         <button className="btn btn-primary btn-sm" onClick={() => onNavigate('prayers')}>🙏 Prière</button>
         <button className="btn btn-secondary btn-sm" onClick={() => onNavigate('settings')}>⚙️ Paramètres</button>
       </div>

@@ -21,7 +21,7 @@ const NAV_ITEMS = [
   { id: 'visites', label: 'Visites', icon: '📋', desc: 'Planifier & exporter' },
   { id: 'cultes', label: 'Cultes', icon: '⛪', desc: 'Récurrents & iCal' },
   { id: 'contacts', label: 'Contacts', icon: '👥', desc: 'Annuaire pastoral' },
-  { id: 'converts', label: 'Âmes', icon: '🕊️', desc: 'Âmes gagnées à Jésus' },
+  { id: 'converts', label: 'Âmes', icon: '🧑', desc: 'Âmes gagnées à Jésus' },
   { id: 'sermons', label: 'Prédications', icon: '📖', desc: 'Sermons & notes' },
   { id: 'prayers', label: 'Prières', icon: '🙏', desc: 'Suivi des demandes' },
   { id: 'birthdays', label: 'Anniversaires', icon: '🎂', desc: 'Dates des membres' },
@@ -76,8 +76,12 @@ export default function App() {
     <div className="app-shell">
       {/* Sidebar (desktop) */}
       <aside className="app-sidebar">
-        <div className="sidebar-logo" style={{ cursor: 'pointer', padding: '8px 4px 16px' }} onClick={() => setActiveSection('settings')}>
-          <Logo />
+        <div className="sidebar-logo" style={{ cursor: 'pointer' }} onClick={() => setActiveSection('settings')}>
+          <div className="sidebar-logo-icon">FOI</div>
+          <div className="sidebar-logo-text">
+            <strong>FAITH</strong>
+            <small>Gestion pastorale</small>
+          </div>
         </div>
         <div className="nav-section">
           {NAV_ITEMS.map(item => (
@@ -94,20 +98,7 @@ export default function App() {
         </div>
       </aside>
 
-      {/* Navigation mobile : select */}
-      <div className="mobile-topbar">
-        <select
-          className="mobile-nav-select"
-          value={activeSection}
-          onChange={e => setActiveSection(e.target.value as SectionId)}
-        >
-          {NAV_ITEMS.map(item => (
-            <option key={item.id} value={item.id}>
-              {item.icon} {item.label}
-            </option>
-          ))}
-        </select>
-      </div>
+
 
       <main className="app-content">
         <div className="app-content-inner">
