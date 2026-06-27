@@ -160,6 +160,13 @@ body {
   flex: 1;
   padding: 28px 32px 40px;
   max-width: calc(100vw - var(--sidebar-width));
+  display: flex;
+  justify-content: center;
+}
+
+.app-content-inner {
+  width: 100%;
+  max-width: 860px;
 }
 
 .app-header {
@@ -769,6 +776,10 @@ button {
   .app-content {
     margin-left: 0;
     padding: 0 0 24px;
+    max-width: 100%;
+  }
+
+  .app-content-inner {
     max-width: 100%;
   }
 

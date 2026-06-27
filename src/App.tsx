@@ -110,6 +110,7 @@ export default function App() {
       </div>
 
       <main className="app-content">
+        <div className="app-content-inner">
         <div className="app-header">
           <div>
             <h1>{activeNav.label}</h1>
@@ -133,6 +134,7 @@ export default function App() {
         <section className="section-card">
           {renderSection()}
         </section>
+        </div>
       </main>
     </div>
   )
