@@ -39,8 +39,9 @@ export default function App() {
   }, [])
 
   useEffect(() => {
-    if (!profile?.name) return
-  }, [profile])
+    const stored = loadJsonFromStorage<Profile | null>('faith_profile', null)
+    setProfile(stored)
+  }, [activeSection])
 
   const activeNav = NAV_ITEMS.find(n => n.id === activeSection)!
 
