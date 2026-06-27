@@ -80,7 +80,7 @@ export default function App() {
 
       {/* Mobile header */}
       <div className="mobile-header">
-        <Logo />
+        {activeNav.icon} {activeNav.label}
       </div>
 
       {/* Sidebar backdrop */}
