@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 120" width="400" height="120">
+  <defs>
+    <linearGradient id="flame" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#a0784a"/>
+      <stop offset="50%" stop-color="#bb8f5d"/>
+      <stop offset="100%" stop-color="#d7b77b"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="rgba(187,143,93,0.3)"/>
+      <stop offset="100%" stop-color="rgba(187,143,93,0)"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Ombre portée croix -->
+  <rect x="31" y="34" width="52" height="52" rx="14" fill="rgba(93,65,42,0.1)"/>
+
+  <!-- Fond du symbole -->
+  <rect x="28" y="31" width="52" height="52" rx="14" fill="url(#flame)"/>
+
+  <!-- Croix -->
+  <line x1="54" y1="41" x2="54" y2="73" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/>
+  <line x1="42" y1="54" x2="66" y2="54" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/>
+
+  <!-- Flamme au-dessus de la croix -->
+  <path d="M54 33 C54 33 49 40 49 43 C49 45.8 51.2 48 54 48 C56.8 48 59 45.8 59 43 C59 40 54 33 54 33Z" fill="#fff" opacity="0.9"/>
+
+  <!-- Texte FAITH -->
+  <text x="96" y="56" font-family="Inter, Arial, sans-serif" font-weight="900" font-size="34" fill="#3f352c" letter-spacing="4">FAITH</text>
+
+  <!-- Sous-titre -->
+  <text x="97" y="76" font-family="Inter, Arial, sans-serif" font-weight="600" font-size="12" fill="#8d7f70" letter-spacing="5">GESTION PASTORALE</text>
+
+  <!-- Ligne décorative -->
+  <line x1="96" y1="85" x2="260" y2="85" stroke="#bb8f5d" stroke-width="1.5" opacity="0.4" stroke-linecap="round"/>
+
+  <!-- Petite flamme décorative -->
+  <path d="M310 52 C310 52 305 58 305 61 C305 63.5 307.2 65.5 310 65.5 C312.8 65.5 315 63.5 315 61 C315 58 310 52 310 52Z" fill="#bb8f5d" opacity="0.3"/>
+  <path d="M330 58 C330 58 327 62 327 64 C327 65.7 328.4 67 330 67 C331.6 67 333 65.7 333 64 C333 62 330 58 330 58Z" fill="#bb8f5d" opacity="0.15"/>
+</svg>

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { loadJsonFromStorage } from '../utils/storage'
+import Logo from './Logo'
 
 const PIN_KEY = 'faith_pin'
 
@@ -60,14 +61,9 @@ export default function PinLock({ onUnlock }: Props) {
         maxWidth: 340,
         width: '100%',
       }}>
-        <div style={{
-          width: 56, height: 56, borderRadius: 'var(--radius-md)',
-          background: 'linear-gradient(180deg, var(--primary-soft), var(--primary-light))',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          margin: '0 auto 16px', fontSize: '1.2rem', fontWeight: 800,
-          color: 'var(--text)', letterSpacing: '0.12em',
-        }}>FOI</div>
-        <h2 style={{ margin: '0 0 4px', fontSize: '1.2rem', color: 'var(--text)' }}>FAITH</h2>
+        <div style={{ margin: '0 auto 20px', maxWidth: 200 }}>
+          <Logo />
+        </div>
         <p style={{ margin: '0 0 24px', fontSize: '0.85rem', color: 'var(--muted)' }}>Entrez votre code PIN</p>
 
         <div style={{ display: 'flex', gap: 12, justifyContent: 'center', marginBottom: 24 }}>

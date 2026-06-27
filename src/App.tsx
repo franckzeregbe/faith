@@ -10,6 +10,7 @@ import PrayerManager from './components/PrayerManager'
 import BirthdayManager from './components/BirthdayManager'
 import SettingsManager from './components/SettingsManager'
 import PinLock from './components/PinLock'
+import Logo from './components/Logo'
 import { loadJsonFromStorage } from './utils/storage'
 import type { Profile } from './types'
 
@@ -67,12 +68,8 @@ export default function App() {
   return (
     <div className="app-shell">
       <aside className="app-sidebar">
-        <div className="sidebar-logo" style={{ cursor: 'pointer' }} onClick={() => setActiveSection('settings')}>
-          <div className="sidebar-logo-icon">FOI</div>
-          <div className="sidebar-logo-text">
-            <strong>FAITH</strong>
-            <small>Gestion pastorale</small>
-          </div>
+        <div className="sidebar-logo" style={{ cursor: 'pointer', padding: '8px 4px 16px' }} onClick={() => setActiveSection('settings')}>
+          <Logo />
         </div>
 
         <div className="nav-section">
