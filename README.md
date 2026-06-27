@@ -46,3 +46,5 @@ Intégration GitHub
 - Le projet est maintenant connecté à GitHub : `https://github.com/franckzeregbe/faith`
 - Un workflow GitHub Actions (`.github/workflows/ci.yml`) vérifie `npm install` et `npm run build` à chaque push sur `main`.
 - Un hook Git local (`.git/hooks/post-commit`) est installé pour pousser automatiquement après chaque commit local.
+- Une branche `dev` peut être utilisée pour le développement actif, tandis que `main` reste stable pour les versions prêtes à publier.
+- Une page de démonstration peut être déployée via GitHub Pages à partir de la branche `gh-pages`.
