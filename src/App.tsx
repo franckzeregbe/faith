@@ -5,6 +5,7 @@ import CultManager from './components/CultManager'
 import ContactManager from './components/ContactManager'
 import ProfileManager from './components/ProfileManager'
 import SermonManager from './components/SermonManager'
+import ConvertManager from './components/ConvertManager'
 import PrayerManager from './components/PrayerManager'
 import BirthdayManager from './components/BirthdayManager'
 import SettingsManager from './components/SettingsManager'
@@ -17,6 +18,7 @@ const NAV_ITEMS = [
   { id: 'visites', label: 'Visites', icon: '📋', desc: 'Planifier & exporter' },
   { id: 'cultes', label: 'Cultes', icon: '⛪', desc: 'Récurrents & iCal' },
   { id: 'contacts', label: 'Contacts', icon: '👥', desc: 'Annuaire pastoral' },
+  { id: 'converts', label: 'Nouvelles âmes', icon: '🕊️', desc: 'Âmes gagnées à Jésus' },
   { id: 'sermons', label: 'Prédications', icon: '📖', desc: 'Sermons & notes' },
   { id: 'prayers', label: 'Prières', icon: '🙏', desc: 'Suivi des demandes' },
   { id: 'birthdays', label: 'Anniversaires', icon: '🎂', desc: 'Dates des membres' },
@@ -48,6 +50,7 @@ export default function App() {
       case 'visites': return <VisitManager />
       case 'cultes': return <CultManager />
       case 'contacts': return <ContactManager />
+      case 'converts': return <ConvertManager />
       case 'sermons': return <SermonManager />
       case 'prayers': return <PrayerManager />
       case 'birthdays': return <BirthdayManager />

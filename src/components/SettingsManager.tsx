@@ -4,7 +4,7 @@ import ConfirmDialog from './ConfirmDialog'
 
 const PIN_KEY = 'faith_pin'
 
-const ALL_KEYS = ['faith_profile', 'fs_visits', 'fs_cults', 'pastoral_contacts', 'faith_sermons', 'faith_prayers', 'faith_birthdays']
+const ALL_KEYS = ['faith_profile', 'fs_visits', 'fs_cults', 'pastoral_contacts', 'faith_converts', 'faith_sermons', 'faith_prayers', 'faith_birthdays']
 
 export default function SettingsManager() {
   const [pin, setPin] = useState('')
@@ -108,6 +108,7 @@ export default function SettingsManager() {
     fs_visits: 'Visites',
     fs_cults: 'Cultes',
     pastoral_contacts: 'Contacts',
+    faith_converts: 'Nouvelles âmes',
     faith_sermons: 'Prédications',
     faith_prayers: 'Prières',
     faith_birthdays: 'Anniversaires',

@@ -63,3 +63,13 @@ export type BirthdayEntry = {
   date: string // MM-DD
   phone?: string
 }
+
+export type ConvertEntry = {
+  id: string
+  name: string
+  phone?: string
+  date: string
+  type: 'profession de foi' | 'baptême' | 'repentance' | 'consécration' | 'autre'
+  status: 'suivi' | 'disciple' | 'engage(e)' | 'relâché'
+  notes: string
+}
