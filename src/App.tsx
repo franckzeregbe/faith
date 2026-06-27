@@ -104,6 +104,7 @@ export default function App() {
               <div className="profile-badge-info">
                 <span className="name">{profile.name}</span>
                 <span className="role">{profile.role} • {profile.church}</span>
+                {profile.slogan && <span style={{ fontSize: '0.78rem', color: 'var(--primary-dark)', fontStyle: 'italic' }}>{profile.slogan}</span>}
               </div>
             </div>
           )}

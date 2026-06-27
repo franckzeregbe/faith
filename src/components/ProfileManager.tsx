@@ -12,6 +12,7 @@ const defaultProfile: Profile = {
   city: '',
   phone: '',
   note: '',
+  slogan: '',
   photoUrl: '',
 }
 
@@ -74,6 +75,9 @@ export default function ProfileManager() {
 
       <div className="form-row" style={{ marginTop: 14 }}>
         <input placeholder="Note pro / mission" value={profile.note} onChange={e => setProfile({ ...profile, note: e.target.value })} />
+      </div>
+      <div className="form-row" style={{ marginTop: 10 }}>
+        <input placeholder="Slogan (ex: « Servir et aimer »)" value={profile.slogan} onChange={e => setProfile({ ...profile, slogan: e.target.value })} />
       </div>
 
       <div className="form-actions" style={{ justifyContent: 'space-between' }}>

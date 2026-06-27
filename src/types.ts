@@ -29,6 +29,7 @@ export type Profile = {
   phone: string
   city: string
   note: string
+  slogan: string
   photoUrl?: string
 }
 
