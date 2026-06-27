@@ -33,6 +33,7 @@ export default function App() {
   const [unlocked, setUnlocked] = useState(false)
   const [activeSection, setActiveSection] = useState<SectionId>('profile')
   const [profile, setProfile] = useState<Profile | null>(null)
+  const [menuOpen, setMenuOpen] = useState(false)
 
   useEffect(() => {
     const stored = loadJsonFromStorage<Profile | null>('faith_profile', null)
@@ -43,6 +44,11 @@ export default function App() {
     const stored = loadJsonFromStorage<Profile | null>('faith_profile', null)
     setProfile(stored)
   }, [activeSection])
+
+  function navigateTo(id: SectionId) {
+    setActiveSection(id)
+    setMenuOpen(false)
+  }
 
   const activeNav = NAV_ITEMS.find(n => n.id === activeSection)!
 
@@ -67,8 +73,22 @@ export default function App() {
 
   return (
     <div className="app-shell">
-      <aside className="app-sidebar">
-        <div className="sidebar-logo" style={{ cursor: 'pointer', padding: '8px 4px 16px' }} onClick={() => setActiveSection('settings')}>
+      {/* Hamburger button */}
+      <button className="hamburger-btn" onClick={() => setMenuOpen(true)} aria-label="Menu">
+        ☰
+      </button>
+
+      {/* Mobile header */}
+      <div className="mobile-header">
+        <Logo />
+      </div>
+
+      {/* Sidebar backdrop */}
+      <div className={`sidebar-backdrop ${menuOpen ? 'open' : ''}`} onClick={() => setMenuOpen(false)} />
+
+      {/* Sidebar */}
+      <aside className={`app-sidebar ${menuOpen ? 'open' : ''}`}>
+        <div className="sidebar-logo" style={{ cursor: 'pointer', padding: '8px 4px 16px' }} onClick={() => navigateTo('settings')}>
           <Logo />
         </div>
 
@@ -78,7 +98,7 @@ export default function App() {
               key={item.id}
               type="button"
               className={`nav-item ${item.id === activeSection ? 'active' : ''}`}
-              onClick={() => setActiveSection(item.id)}
+              onClick={() => navigateTo(item.id)}
             >
               <span className="nav-icon">{item.icon}</span>
               <span>{item.label}</span>
