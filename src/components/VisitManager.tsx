@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { exportCSV, exportICal } from '../utils/export'
 import { loadJsonFromStorage, saveJsonToStorage } from '../utils/storage'
+import { requestPermission, scheduleVisitNotification, checkAllNotifications } from '../utils/notifications'
 import ConfirmDialog from './ConfirmDialog'
 import type { Visit } from '../types'
 
@@ -16,7 +17,10 @@ export default function VisitManager() {
   const [deleteTarget, setDeleteTarget] = useState<Visit | null>(null)
 
   useEffect(() => {
-    setVisits(loadJsonFromStorage<Visit[]>(STORAGE_KEY, []))
+    const stored = loadJsonFromStorage<Visit[]>(STORAGE_KEY, [])
+    setVisits(stored)
+    requestPermission()
+    checkAllNotifications(stored, [])
   }, [])
 
   useEffect(() => {
@@ -26,6 +30,7 @@ export default function VisitManager() {
   function addVisit() {
     if (!name || !date) return
     const newVisit: Visit = { id: Date.now().toString(), name: name.trim(), date, notes: notes.trim() }
+    scheduleVisitNotification(newVisit)
     setVisits(current => [newVisit, ...current])
     setName('')
     setDate('')

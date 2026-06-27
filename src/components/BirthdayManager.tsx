@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { loadJsonFromStorage, saveJsonToStorage } from '../utils/storage'
+import { requestPermission, checkBirthdaysNotifications } from '../utils/notifications'
 import ConfirmDialog from './ConfirmDialog'
 import type { BirthdayEntry } from '../types'
 
@@ -16,7 +17,10 @@ export default function BirthdayManager() {
   const [deleteTarget, setDeleteTarget] = useState<BirthdayEntry | null>(null)
 
   useEffect(() => {
-    setEntries(loadJsonFromStorage<BirthdayEntry[]>(STORAGE_KEY, []))
+    const stored = loadJsonFromStorage<BirthdayEntry[]>(STORAGE_KEY, [])
+    setEntries(stored)
+    requestPermission()
+    checkBirthdaysNotifications(stored)
   }, [])
 
   useEffect(() => {
