@@ -11,6 +11,7 @@ export default function SermonManager() {
   const [bibleText, setBibleText] = useState('')
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10))
   const [notes, setNotes] = useState('')
+  const [search, setSearch] = useState('')
   const [editing, setEditing] = useState<Sermon | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<Sermon | null>(null)
 
@@ -30,6 +31,12 @@ export default function SermonManager() {
     setDate(new Date().toISOString().slice(0, 10))
     setNotes('')
   }
+
+  const filtered = search ? sermons.filter(s =>
+    s.title.toLowerCase().includes(search.toLowerCase()) ||
+    s.bibleText.toLowerCase().includes(search.toLowerCase()) ||
+    s.notes?.toLowerCase().includes(search.toLowerCase())
+  ) : sermons
 
   function updateSermon() {
     if (!editing) return
@@ -55,15 +62,27 @@ export default function SermonManager() {
         <button className="btn btn-primary" onClick={addSermon} disabled={!title.trim() || !bibleText.trim()}>Ajouter</button>
       </div>
 
+      {sermons.length > 0 && (
+        <div className="search-bar">
+          <input placeholder="Rechercher par titre, texte biblique ou note..." value={search} onChange={e => setSearch(e.target.value)} />
+        </div>
+      )}
+
       {sermons.length === 0 ? (
         <div className="empty-state">
           <div className="empty-state-icon">📖</div>
           <h3>Aucune prédication enregistrée</h3>
           <p>Ajoute tes sermons pour garder une trace de la Parole proclamée.</p>
         </div>
+      ) : filtered.length === 0 ? (
+        <div className="empty-state">
+          <div className="empty-state-icon">🔍</div>
+          <h3>Aucun résultat</h3>
+          <p>Essaie un autre terme de recherche.</p>
+        </div>
       ) : (
         <ul className="item-list">
-          {sermons.map(sermon => (
+          {filtered.map(sermon => (
             <li key={sermon.id} className="item-card">
               <div className="item-card-body">
                 <strong>{sermon.title}</strong>

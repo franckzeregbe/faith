@@ -15,6 +15,7 @@ export default function BirthdayManager() {
   const [phone, setPhone] = useState('')
   const [editing, setEditing] = useState<BirthdayEntry | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<BirthdayEntry | null>(null)
+  const [search, setSearch] = useState('')
 
   useEffect(() => {
     const stored = loadJsonFromStorage<BirthdayEntry[]>(STORAGE_KEY, [])
@@ -49,16 +50,23 @@ export default function BirthdayManager() {
     setDeleteTarget(null)
   }
 
+  const filtered = search ? entries.filter(e =>
+    e.name.toLowerCase().includes(search.toLowerCase()) || e.phone?.toLowerCase().includes(search.toLowerCase())
+  ) : entries
+
   const sorted = useMemo(() => {
     const now = new Date()
-    const today = `${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
-    return [...entries].sort((a, b) => {
-      const aDays = a.date >= today ? 0 : 1
-      const bDays = b.date >= today ? 0 : 1
-      if (aDays !== bDays) return aDays - bDays
-      return a.date.localeCompare(b.date)
+    const todayDOY = now.getMonth() * 30 + now.getDate()
+    return [...filtered].sort((a, b) => {
+      const [am, ad] = a.date.split('-').map(Number)
+      const [bm, bd] = b.date.split('-').map(Number)
+      const aDOY = (am - 1) * 30 + ad
+      const bDOY = (bm - 1) * 30 + bd
+      const aDiff = aDOY >= todayDOY ? aDOY - todayDOY : 365 + aDOY - todayDOY
+      const bDiff = bDOY >= todayDOY ? bDOY - todayDOY : 365 + bDOY - todayDOY
+      return aDiff - bDiff
     })
-  }, [entries])
+  }, [filtered])
 
   function formatDate(date: string) {
     const [m, d] = date.split('-')
@@ -67,8 +75,11 @@ export default function BirthdayManager() {
 
   function isUpcoming(date: string) {
     const now = new Date()
-    const today = `${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
-    return date >= today
+    const todayDOY = now.getMonth() * 30 + now.getDate()
+    const [m, d] = date.split('-').map(Number)
+    const doy = (m - 1) * 30 + d
+    const diff = doy >= todayDOY ? doy - todayDOY : 365 + doy - todayDOY
+    return diff <= 30
   }
 
   return (
@@ -91,11 +102,23 @@ export default function BirthdayManager() {
         <button className="btn btn-primary" onClick={addEntry} disabled={!name.trim() || !month || !day}>Ajouter</button>
       </div>
 
+      {entries.length > 0 && (
+        <div className="search-bar">
+          <input placeholder="Rechercher par nom ou téléphone..." value={search} onChange={e => setSearch(e.target.value)} />
+        </div>
+      )}
+
       {entries.length === 0 ? (
         <div className="empty-state">
           <div className="empty-state-icon">🎂</div>
           <h3>Aucun anniversaire enregistré</h3>
           <p>Ajoute les dates de naissance des membres pour ne plus les oublier.</p>
+        </div>
+      ) : sorted.length === 0 ? (
+        <div className="empty-state">
+          <div className="empty-state-icon">🔍</div>
+          <h3>Aucun résultat</h3>
+          <p>Essaie un autre terme de recherche.</p>
         </div>
       ) : (
         <ul className="item-list">

@@ -67,7 +67,7 @@ export default function PinLock({ onUnlock }: Props) {
         <p style={{ margin: '0 0 24px', fontSize: '0.85rem', color: 'var(--muted)' }}>Entrez votre code PIN</p>
 
         <div style={{ display: 'flex', gap: 12, justifyContent: 'center', marginBottom: 24 }}>
-          {[0, 1, 2, 3].map(i => (
+          {[0, 1, 2, 3, 4, 5].map(i => (
             <div key={i} style={{
               width: 16, height: 16, borderRadius: '50%',
               background: value[i] ? 'var(--primary)' : 'var(--border)',

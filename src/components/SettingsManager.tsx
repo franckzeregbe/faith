@@ -6,8 +6,26 @@ const PIN_KEY = 'faith_pin'
 
 const ALL_KEYS = ['faith_profile', 'fs_visits', 'fs_cults', 'pastoral_contacts', 'faith_converts', 'faith_sermons', 'faith_prayers', 'faith_birthdays']
 
-export default function SettingsManager() {
-  const [pin, setPin] = useState('')
+const SECTIONS = [
+  { id: 'home', label: 'Accueil', icon: '🏠' },
+  { id: 'profile', label: 'Profil', icon: '👤' },
+  { id: 'visites', label: 'Visites', icon: '📋' },
+  { id: 'cultes', label: 'Cultes', icon: '⛪' },
+  { id: 'contacts', label: 'Contacts', icon: '👥' },
+  { id: 'converts', label: 'Âmes', icon: '🧑' },
+  { id: 'sermons', label: 'Prédications', icon: '📖' },
+  { id: 'bible', label: 'Bible', icon: '📜' },
+  { id: 'prayers', label: 'Prières', icon: '🙏' },
+  { id: 'birthdays', label: 'Anniversaires', icon: '🎂' },
+  { id: 'messages', label: 'Inspiration', icon: '✉️' },
+  { id: 'settings', label: 'Paramètres', icon: '⚙️' },
+]
+
+type Props = {
+  onNavigate?: (id: string) => void
+}
+
+export default function SettingsManager({ onNavigate }: Props) {
   const [pinEnabled, setPinEnabled] = useState(false)
   const [showPinInput, setShowPinInput] = useState(false)
   const [newPin, setNewPin] = useState('')
@@ -62,7 +80,6 @@ export default function SettingsManager() {
         if (raw) data[key] = JSON.parse(raw)
       } catch { /* ignore */ }
     }
-    data[PIN_KEY] = loadJsonFromStorage(PIN_KEY, '')
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
@@ -86,7 +103,7 @@ export default function SettingsManager() {
             count++
           }
         }
-        if (data[PIN_KEY]) saveJsonToStorage(PIN_KEY, data[PIN_KEY])
+        // PIN deliberately excluded from import (security)
         setImportMsg(`${count} sections restaurées avec succès. Recharge la page.`)
         if (fileRef.current) fileRef.current.value = ''
       } catch {
@@ -116,15 +133,29 @@ export default function SettingsManager() {
 
   return (
     <div style={{ display: 'grid', gap: 28 }}>
+
+      {/* Navigation rapide */}
+      <div className="settings-nav-dropdown">
+        <label>Aller à une section</label>
+        <select
+          value=""
+          onChange={e => { if (e.target.value && onNavigate) onNavigate(e.target.value) }}
+          className="settings-nav-select"
+        >
+          <option value="" disabled>Sélectionner...</option>
+          {SECTIONS.map(s => (
+            <option key={s.id} value={s.id}>{s.icon} {s.label}</option>
+          ))}
+        </select>
+      </div>
+
       {/* Sécurité */}
       <div>
         <h3 style={{ margin: '0 0 12px', fontSize: '1rem', color: 'var(--text)' }}>🔐 Sécurité</h3>
         <div className="item-card" style={{ cursor: 'default' }}>
           <div className="item-card-body">
-            <strong>Verrouillage par code PIN</strong>
-            <span className="item-meta">
-              {pinEnabled ? '✅ Activé' : '❌ Désactivé'} — Un code à 4 chiffres protège l'accès à l'app.
-            </span>
+            <strong>Verrouillage PIN</strong>
+            <span className="item-meta">{pinEnabled ? '✅ Activé' : '❌ Désactivé'}</span>
           </div>
           <div className="item-actions">
             {!showPinInput && !pinEnabled && (
@@ -189,8 +220,7 @@ export default function SettingsManager() {
         <h3 style={{ margin: '0 0 12px', fontSize: '1rem', color: 'var(--text)' }}>ℹ️ À propos</h3>
         <div style={{ background: 'var(--surface-alt)', borderRadius: 'var(--radius-md)', padding: '16px 20px', display: 'grid', gap: 4, fontSize: '0.88rem', color: 'var(--text-secondary)' }}>
           <span><strong style={{ color: 'var(--text)' }}>FAITH</strong> — Gestion pastorale</span>
-          <span>Version 0.1.0</span>
-          <span>Stockage local — 100% offline</span>
+          <span>Version 1.0.0 • 100% offline</span>
           <span>Développé pour l'œuvre de Dieu 🙏</span>
         </div>
       </div>

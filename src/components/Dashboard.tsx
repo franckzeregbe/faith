@@ -49,11 +49,16 @@ export default function Dashboard({ onNavigate }: Props) {
 
     // Anniversaires à venir (30 jours)
     const now = new Date()
-    const todayStr = `${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
+    const todayDOY = now.getMonth() * 30 + now.getDate()
     const soon = birthdays
-      .map(b => ({ ...b, dayMonth: b.date }))
-      .filter(b => b.dayMonth >= todayStr)
-      .sort((a, b) => a.dayMonth.localeCompare(b.dayMonth))
+      .map(b => {
+        const [m, d] = b.date.split('-').map(Number)
+        const doy = (m - 1) * 30 + d
+        const diff = doy >= todayDOY ? doy - todayDOY : 365 + doy - todayDOY
+        return { ...b, dayMonth: b.date, diff }
+      })
+      .filter(b => b.diff <= 30)
+      .sort((a, b) => a.diff - b.diff)
       .slice(0, 5)
     setUpcomingBirthdays(soon)
   }, [])
@@ -65,33 +70,22 @@ export default function Dashboard({ onNavigate }: Props) {
       {/* Bienvenue */}
       <div style={{ textAlign: 'center', padding: '8px 0' }}>
         <h2 style={{ margin: 0, fontSize: '1.3rem', color: 'var(--text)' }}>
-          {profile?.name ? `Bienvenue ${profile.name.split(' ')[0]} 👋` : 'Bienvenue sur FAITH 👋'}
+          {profile?.name ? `Bienvenue ${profile.name.split(' ')[0]} 👋` : 'Bienvenue 👋'}
         </h2>
         <p style={{ margin: '6px 0 0', color: 'var(--text-secondary)', fontSize: '0.88rem' }}>
           {total > 0
-            ? `${total} élément${total > 1 ? 's' : ''} enregistré${total > 1 ? 's' : ''} dans ta base pastorale`
-            : 'Commence par remplir ton profil et ajouter tes premières données.'}
+            ? `${total} élément${total > 1 ? 's' : ''} enregistré${total > 1 ? 's' : ''}`
+            : 'Remplis ton profil et ajoute tes données.'}
         </p>
       </div>
 
       {/* Grille de stats */}
-      <div style={{
-        display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))',
-        gap: 10,
-      }}>
+      <div className="dashboard-stats">
         {stats.map(s => (
-          <div
-            key={s.section}
-            onClick={() => onNavigate(s.section)}
-            style={{
-              background: 'var(--surface-card)', border: '1px solid var(--border-light)',
-              borderRadius: 'var(--radius-md)', padding: '14px 12px', cursor: 'pointer',
-              textAlign: 'center', transition: 'box-shadow 0.2s',
-            }}
-          >
-            <div style={{ fontSize: '1.6rem' }}>{s.icon}</div>
-            <div style={{ fontSize: '1.2rem', fontWeight: 900, color: 'var(--text)', marginTop: 4 }}>{s.count}</div>
-            <div style={{ fontSize: '0.78rem', color: 'var(--muted)', fontWeight: 600 }}>{s.label}</div>
+          <div key={s.section} className="dash-stat" onClick={() => onNavigate(s.section)}>
+            <div className="dash-stat-icon">{s.icon}</div>
+            <div className="dash-stat-num">{s.count}</div>
+            <div className="dash-stat-label">{s.label}</div>
           </div>
         ))}
       </div>
@@ -134,12 +128,12 @@ export default function Dashboard({ onNavigate }: Props) {
         )}
       </div>
 
-      {/* Raccourcis rapides */}
+      {/* Raccourcis */}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center', marginTop: 4 }}>
         <button className="btn btn-primary btn-sm" onClick={() => onNavigate('visites')}>➕ Visite</button>
         <button className="btn btn-primary btn-sm" onClick={() => onNavigate('converts')}>🧑 Nouvelle âme</button>
+        <button className="btn btn-primary btn-sm" onClick={() => onNavigate('bible')}>📜 Bible</button>
         <button className="btn btn-primary btn-sm" onClick={() => onNavigate('prayers')}>🙏 Prière</button>
-        <button className="btn btn-secondary btn-sm" onClick={() => onNavigate('settings')}>⚙️ Paramètres</button>
       </div>
     </div>
   )

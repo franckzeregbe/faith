@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.faith.pastoral',
+  appId: 'com.pastoral.tool',
   appName: 'FAITH',
   webDir: 'dist'
 };

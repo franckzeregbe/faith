@@ -10,6 +10,7 @@ export default function PrayerManager() {
   const [title, setTitle] = useState('')
   const [requester, setRequester] = useState('')
   const [notes, setNotes] = useState('')
+  const [search, setSearch] = useState('')
   const [editing, setEditing] = useState<PrayerRequest | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<PrayerRequest | null>(null)
 
@@ -54,6 +55,11 @@ export default function PrayerManager() {
     setDeleteTarget(null)
   }
 
+  const filtered = search ? prayers.filter(p =>
+    p.title.toLowerCase().includes(search.toLowerCase()) ||
+    p.requester.toLowerCase().includes(search.toLowerCase()) ||
+    p.notes?.toLowerCase().includes(search.toLowerCase())
+  ) : prayers
   const answered = prayers.filter(p => p.status === 'exaucée').length
 
   return (
@@ -75,15 +81,27 @@ export default function PrayerManager() {
         </div>
       )}
 
+      {prayers.length > 0 && (
+        <div className="search-bar">
+          <input placeholder="Rechercher par motif, nom ou note..." value={search} onChange={e => setSearch(e.target.value)} />
+        </div>
+      )}
+
       {prayers.length === 0 ? (
         <div className="empty-state">
           <div className="empty-state-icon">🙏</div>
           <h3>Aucune demande de prière</h3>
           <p>Enregistre les motifs de prière pour suivre les réponses de Dieu.</p>
         </div>
+      ) : filtered.length === 0 ? (
+        <div className="empty-state">
+          <div className="empty-state-icon">🔍</div>
+          <h3>Aucun résultat</h3>
+          <p>Essaie un autre terme de recherche.</p>
+        </div>
       ) : (
         <ul className="item-list">
-          {prayers.map(prayer => (
+          {filtered.map(prayer => (
             <li key={prayer.id} className="item-card">
               <div className="item-card-body">
                 <strong>{prayer.title}</strong>

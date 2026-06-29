@@ -15,6 +15,7 @@ export default function ConvertManager() {
   const [type, setType] = useState<ConvertEntry['type']>('profession de foi')
   const [status, setStatus] = useState<ConvertEntry['status']>('suivi')
   const [notes, setNotes] = useState('')
+  const [search, setSearch] = useState('')
   const [editing, setEditing] = useState<ConvertEntry | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<ConvertEntry | null>(null)
 
@@ -56,6 +57,11 @@ export default function ConvertManager() {
     setDeleteTarget(null)
   }
 
+  const filtered = search ? entries.filter(e =>
+    e.name.toLowerCase().includes(search.toLowerCase()) ||
+    e.phone?.toLowerCase().includes(search.toLowerCase()) ||
+    e.notes?.toLowerCase().includes(search.toLowerCase())
+  ) : entries
   const total = entries.length
   const disciples = entries.filter(e => e.status === 'disciple' || e.status === 'engage(e)').length
   const types = entries.reduce((acc, e) => { acc[e.type] = (acc[e.type] || 0) + 1; return acc }, {} as Record<string, number>)
@@ -100,15 +106,27 @@ export default function ConvertManager() {
         <button className="btn btn-primary" onClick={addEntry} disabled={!name.trim()}>Ajouter</button>
       </div>
 
+      {entries.length > 0 && (
+        <div className="search-bar">
+          <input placeholder="Rechercher par nom, téléphone ou note..." value={search} onChange={e => setSearch(e.target.value)} />
+        </div>
+      )}
+
       {entries.length === 0 ? (
         <div className="empty-state">
           <div className="empty-state-icon">🕊️</div>
           <h3>Aucune âme enregistrée</h3>
           <p>Ajoute chaque personne qui donne sa vie à Jésus — profession de foi, baptême, repentance.</p>
         </div>
+      ) : filtered.length === 0 ? (
+        <div className="empty-state">
+          <div className="empty-state-icon">🔍</div>
+          <h3>Aucun résultat</h3>
+          <p>Essaie un autre terme de recherche.</p>
+        </div>
       ) : (
         <ul className="item-list">
-          {entries.map(entry => (
+          {filtered.map(entry => (
             <li key={entry.id} className="item-card">
               <div className="item-card-body">
                 <strong>{entry.name}</strong>
