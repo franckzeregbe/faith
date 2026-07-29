@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { loadJsonFromStorage, saveJsonToStorage } from '../utils/storage'
+import { hashString, isNumericPin, loadJsonFromStorage, saveJsonToStorage } from '../utils/storage'
 import ConfirmDialog from './ConfirmDialog'
 
 const PIN_KEY = 'faith_pin'
@@ -40,6 +40,11 @@ export default function SettingsManager({ onNavigate }: Props) {
   useEffect(() => {
     const stored = loadJsonFromStorage<string>(PIN_KEY, '')
     setPinEnabled(stored.length > 0)
+
+    if (stored && isNumericPin(stored)) {
+      hashString(stored).then(hashed => saveJsonToStorage(PIN_KEY, hashed))
+    }
+
     const s = ALL_KEYS.map(key => {
       let count = 0
       try {
@@ -54,10 +59,11 @@ export default function SettingsManager({ onNavigate }: Props) {
     setStats(s)
   }, [])
 
-  function enablePin() {
+  async function enablePin() {
     if (newPin.length < 4) { setPinError('Le code doit faire au moins 4 chiffres.'); return }
     if (newPin !== confirmPin) { setPinError('Les codes ne correspondent pas.'); return }
-    saveJsonToStorage(PIN_KEY, newPin)
+    const hashedPin = await hashString(newPin)
+    saveJsonToStorage(PIN_KEY, hashedPin)
     setPinEnabled(true)
     setPinSuccess('Code PIN activé ✓')
     setPinError('')
@@ -171,12 +177,12 @@ export default function SettingsManager({ onNavigate }: Props) {
           <div style={{ marginTop: 12, display: 'grid', gap: 10 }}>
             <div className="form-row">
               <input
-                type="password" inputMode="numeric" maxLength={6}
-                placeholder="Nouveau code (4-6 chiffres)"
+                type="password" inputMode="numeric" maxLength={4}
+                placeholder="Nouveau code (4 chiffres)"
                 value={newPin} onChange={e => { setNewPin(e.target.value.replace(/\D/g, '')); setPinError('') }}
               />
               <input
-                type="password" inputMode="numeric" maxLength={6}
+                type="password" inputMode="numeric" maxLength={4}
                 placeholder="Confirmer le code"
                 value={confirmPin} onChange={e => { setConfirmPin(e.target.value.replace(/\D/g, '')); setPinError('') }}
               />

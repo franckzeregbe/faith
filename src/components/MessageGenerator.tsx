@@ -4,9 +4,9 @@ import { generateMessage, TEMPLATE_TYPES } from '../utils/generator'
 type TemplateType = keyof typeof TEMPLATE_TYPES
 
 const LABELS: Record<TemplateType, { label: string; desc: string }> = {
-  encouragement: { label: 'SMS court', desc: 'Message bref à envoyer par SMS' },
-  whatsapp: { label: 'WhatsApp', desc: 'Message plus long avec signature pasteur' },
-  facebook: { label: 'Facebook post', desc: 'Publication publique avec hashtags' },
+  encouragement: { label: 'SMS', desc: 'Message bref à envoyer par SMS' },
+  whatsapp: { label: 'WhatsApp', desc: 'Avec signature pasteur' },
+  facebook: { label: 'Facebook', desc: 'Publication avec hashtags' },
 }
 
 export default function MessageGenerator() {
@@ -39,7 +39,7 @@ export default function MessageGenerator() {
           value={name}
           onChange={e => setName(e.target.value)}
         />
-        <select value={type} onChange={e => setType(e.target.value as TemplateType)}>
+        <select value={type} onChange={e => setType(e.target.value as TemplateType)} style={{ textOverflow: 'ellipsis', minWidth: 0, maxWidth: '100%' }}>
           {Object.entries(LABELS).map(([key, val]) => (
             <option key={key} value={key}>{val.label} — {val.desc}</option>
           ))}

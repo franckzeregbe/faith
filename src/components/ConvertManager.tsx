@@ -75,16 +75,16 @@ export default function ConvertManager() {
       </div>
 
       {total > 0 && (
-        <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', marginBottom: 16 }}>
-          <div className="stat-card" style={{ flex: 1, minWidth: 120, padding: '12px 16px' }}>
+        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 16, maxWidth: '100%' }}>
+          <div className="stat-card" style={{ flex: '1 1 100px', minWidth: 0, padding: '12px 16px', maxWidth: '100%' }}>
             <span className="stat-label">Nouvelles âmes</span>
             <span className="stat-value" style={{ fontSize: '1.2rem' }}>{total}</span>
           </div>
-          <div className="stat-card" style={{ flex: 1, minWidth: 120, padding: '12px 16px' }}>
+          <div className="stat-card" style={{ flex: '1 1 100px', minWidth: 0, padding: '12px 16px', maxWidth: '100%' }}>
             <span className="stat-label">Disciples actifs</span>
             <span className="stat-value" style={{ fontSize: '1.2rem' }}>{disciples}</span>
           </div>
-          <div className="stat-card" style={{ flex: 1, minWidth: 120, padding: '12px 16px' }}>
+          <div className="stat-card" style={{ flex: '1 1 100px', minWidth: 0, padding: '12px 16px', maxWidth: '100%' }}>
             <span className="stat-label">Baptêmes</span>
             <span className="stat-value" style={{ fontSize: '1.2rem' }}>{types['baptême'] || 0}</span>
           </div>

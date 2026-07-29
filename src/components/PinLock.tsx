@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { loadJsonFromStorage } from '../utils/storage'
+import { hashString, loadJsonFromStorage, isNumericPin, isHashedPin } from '../utils/storage'
 import Logo from './Logo'
 
 const PIN_KEY = 'faith_pin'
@@ -11,28 +11,48 @@ type Props = {
 export default function PinLock({ onUnlock }: Props) {
   const [value, setValue] = useState('')
   const [error, setError] = useState(false)
-
-  const storedPin = loadJsonFromStorage<string>(PIN_KEY, '')
+  const [storedPin, setStoredPin] = useState<string | null>(null)
 
   useEffect(() => {
-    if (!storedPin) onUnlock()
+    const pin = loadJsonFromStorage<string>(PIN_KEY, '')
+    if (pin && isNumericPin(pin)) {
+      hashString(pin).then(hashed => {
+        setStoredPin(hashed)
+        localStorage.setItem(PIN_KEY, JSON.stringify(hashed))
+      }).catch(() => setStoredPin(pin))
+    } else {
+      setStoredPin(pin)
+    }
   }, [])
 
   useEffect(() => {
-    if (value.length < 4) return
-    if (value === storedPin) {
+    if (storedPin === null) return
+    if (!storedPin) {
       onUnlock()
-    } else {
-      setError(true)
-      const t = setTimeout(() => { setValue(''); setError(false) }, 1200)
-      return () => clearTimeout(t)
     }
-  }, [value])
+  }, [storedPin, onUnlock])
 
-  if (!storedPin) return null
+  useEffect(() => {
+    if (value.length < 4 || storedPin === null || !isHashedPin(storedPin)) return
+    let cancelled = false
+    hashString(value).then(hashed => {
+      if (cancelled) return
+      if (hashed === storedPin) {
+        onUnlock()
+      } else {
+        setError(true)
+        const t = setTimeout(() => { setValue(''); setError(false) }, 1200)
+        return () => clearTimeout(t)
+      }
+    })
+
+    return () => { cancelled = true }
+  }, [value, storedPin, onUnlock])
+
+  if (storedPin === null) return null
 
   function handleDigit(d: string) {
-    if (value.length < 6) {
+    if (value.length < 4) {
       setValue(v => v + d)
       setError(false)
     }
@@ -67,7 +87,7 @@ export default function PinLock({ onUnlock }: Props) {
         <p style={{ margin: '0 0 24px', fontSize: '0.85rem', color: 'var(--muted)' }}>Entrez votre code PIN</p>
 
         <div style={{ display: 'flex', gap: 12, justifyContent: 'center', marginBottom: 24 }}>
-          {[0, 1, 2, 3, 4, 5].map(i => (
+          {[0, 1, 2, 3].map(i => (
             <div key={i} style={{
               width: 16, height: 16, borderRadius: '50%',
               background: value[i] ? 'var(--primary)' : 'var(--border)',

@@ -57,7 +57,6 @@ const NAV_SECTIONS = [
 ]
 
 const NAV_ITEMS = NAV_SECTIONS.flatMap(s => s.items)
-type SectionId = typeof NAV_ITEMS[number]['id']
 
 type SectionId = typeof NAV_ITEMS[number]['id']
 
@@ -72,19 +71,14 @@ export default function App() {
     setProfile(stored)
   }, [])
 
-  useEffect(() => {
-    const stored = loadJsonFromStorage<Profile | null>('faith_profile', null)
-    setProfile(stored)
-  }, [activeSection])
-
-  function navigateTo(id: string) {
-    setActiveSection(id as SectionId)
+  function navigateTo(id: SectionId) {
+    setActiveSection(id)
     setSidebarOpen(false)
   }
 
-  const activeNav = NAV_ITEMS.find(n => n.id === activeSection)!
+  const activeNav = NAV_ITEMS.find(n => n.id === activeSection) ?? NAV_ITEMS[0]
 
-  const renderSection = () => {
+  const renderSection = (): React.ReactNode => {
     switch (activeSection) {
       case 'home': return <Dashboard onNavigate={navigateTo} />
       case 'profile': return <ProfileManager />
@@ -98,6 +92,7 @@ export default function App() {
       case 'birthdays': return <BirthdayManager />
       case 'messages': return <MessageGenerator />
       case 'settings': return <SettingsManager onNavigate={navigateTo} />
+      default: return <div>Section introuvable</div>
     }
   }
 

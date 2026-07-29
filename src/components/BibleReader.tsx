@@ -362,11 +362,12 @@ export default function BibleReader() {
   display: flex;
   flex-direction: column;
   height: 100%;
-  min-height: 500px;
+  min-height: 300px;
   background: var(--bg);
   border-radius: var(--radius-xl);
   overflow: hidden;
   position: relative;
+  max-width: 100%;
 }
 
 .bible-container.bible-dark {
@@ -497,6 +498,8 @@ export default function BibleReader() {
   display: flex;
   gap: 8px;
   align-items: center;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .bible-qj-select {
@@ -541,17 +544,20 @@ export default function BibleReader() {
 }
 
 .bible-panel-books {
-  width: 280px;
+  width: 260px;
+  min-width: 0;
 }
 
 .bible-panel-chapters {
-  width: 220px;
+  width: 200px;
+  min-width: 0;
 }
 
 .bible-panel-reading {
-  flex: 1;
+  flex: 1 1 0;
   border-right: none;
   min-width: 0;
+  overflow: hidden;
 }
 
 .bible-panel-header {
@@ -785,6 +791,8 @@ export default function BibleReader() {
   font-size: 1.1rem;
   line-height: 1.9;
   color: var(--text);
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 .bible-verse {
@@ -813,6 +821,17 @@ export default function BibleReader() {
   overflow-y: auto;
   padding: 20px 24px;
   animation: bibleFadeIn 0.25s ease;
+  max-width: 100%;
+}
+
+.bible-search-results-overlay .bible-search-result-item {
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.bible-search-results-overlay .bible-empty-icon {
+  font-size: 2.5rem;
+  opacity: 0.3;
 }
 
 @keyframes bibleFadeIn {
@@ -881,6 +900,8 @@ export default function BibleReader() {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 .bible-search-result-text mark {
@@ -972,18 +993,11 @@ export default function BibleReader() {
     width: 100% !important;
     border-right: none;
     border-bottom: 1px solid var(--border-light);
-    max-height: 0;
-    opacity: 0;
-    overflow: hidden;
-    transform: translateX(-10px);
-    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    display: none;
   }
 
   .bible-panel.visible {
-    max-height: 2000px;
-    opacity: 1;
-    transform: translateX(0);
-    overflow: visible;
+    display: flex;
   }
 
   .bible-panel-scroll {
@@ -1015,7 +1029,7 @@ export default function BibleReader() {
 
 @media (min-width: 769px) {
   .bible-panel-books.has-selection {
-    width: 240px;
+    width: 220px;
   }
 
   .bible-back-btn {
