@@ -18,10 +18,16 @@ android {
     }
     signingConfigs {
         debug { }
+        release {
+            storeFile file('faith-release.keystore')
+            storePassword 'faith1234'
+            keyAlias 'faith'
+            keyPassword 'faith1234'
+        }
     }
     buildTypes {
         release {
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
