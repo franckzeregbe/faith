@@ -1,21 +1,31 @@
-# Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+# FAITH ProGuard rules
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# Room: keep data layer classes
+-keep class com.pastoral.tool.data.entity.** { *; }
+-keep class com.pastoral.tool.data.dao.** { *; }
+-keep class com.pastoral.tool.domain.** { *; }
+-keep class com.pastoral.tool.data.* { *; }
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+# Room: keep RoomDatabase subclasses
+-keep class * extends androidx.room.RoomDatabase
+-keep class androidx.room.** { *; }
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# Keep Room generated DAO implementations
+-keep class *Dao { *; }
+-keep class *Dao$* { *; }
+
+# Kotlin serialization
+-keep class kotlinx.serialization.** { *; }
+-keep class com.pastoral.tool.domain.** { *; }
+
+# Keep enum values
+-keepclassmembers enum * {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+}
+
+# Suppress logging in release
+-assumenosideeffects class android.util.Log {
+    public static *** d(...);
+    public static *** v(...);
+}

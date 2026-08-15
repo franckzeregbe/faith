@@ -1,0 +1,69 @@
+export type Visit = {
+  id: string
+  name: string
+  date: string
+  notes?: string
+}
+
+export type Cult = {
+  id: string
+  title: string
+  weekday: number
+  time: string
+  startDate: string
+}
+
+export type Contact = {
+  id: string
+  name: string
+  phone?: string
+  note?: string
+  lastVisit?: string
+}
+
+export type Profile = {
+  name: string
+  church: string
+  role: string
+  email: string
+  phone: string
+  city: string
+  note: string
+  slogan: string
+  photoUrl?: string
+}
+
+export type SocialPost = {
+  id: string
+  title: string
+  verse: string
+  message: string
+  date: string
+}
+
+export type Sermon = {
+  id: string
+  title: string
+  bibleText: string
+  date: string
+  notes: string
+}
+
+export type PrayerRequest = {
+  id: string
+  title: string
+  requester: string
+  date: string
+  status: 'en prière' | 'exaucée'
+  notes: string
+}
+
+export type ConvertEntry = {
+  id: string
+  name: string
+  phone?: string
+  date: string
+  type: 'profession de foi' | 'baptême' | 'repentance' | 'consécration' | 'autre'
+  status: 'suivi' | 'disciple' | 'engage(e)' | 'relâché'
+  notes: string
+}
