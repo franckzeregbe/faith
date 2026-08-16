@@ -1,6 +1,11 @@
 package com.pastoral.tool.ui.screens.settings
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.outlined.DarkMode
+import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -21,32 +26,52 @@ fun SettingsScreen(app: FaithApp, navController: NavHostController) {
         Text("Paramètres", style = MaterialTheme.typography.headlineMedium)
         Spacer(modifier = Modifier.height(16.dp))
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text("Mode sombre")
-            Switch(
-                checked = settings.darkMode,
-                onCheckedChange = {
-                    app.repository.saveSettings(settings.copy(darkMode = it))
+        ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        Icons.Outlined.DarkMode,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Text("Mode sombre", modifier = Modifier.weight(1f))
+                    Switch(
+                        checked = settings.darkMode,
+                        onCheckedChange = {
+                            app.repository.saveSettings(settings.copy(darkMode = it))
+                        }
+                    )
                 }
-            )
-        }
 
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text("Notifications")
-            Switch(
-                checked = settings.notificationsEnabled,
-                onCheckedChange = {
-                    app.repository.saveSettings(settings.copy(notificationsEnabled = it))
+                HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant)
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        Icons.Outlined.Notifications,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Text("Notifications", modifier = Modifier.weight(1f))
+                    Switch(
+                        checked = settings.notificationsEnabled,
+                        onCheckedChange = {
+                            app.repository.saveSettings(settings.copy(notificationsEnabled = it))
+                        }
+                    )
                 }
-            )
+            }
         }
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -57,6 +82,8 @@ fun SettingsScreen(app: FaithApp, navController: NavHostController) {
             onClick = { app.repository.saveSettings(settings.copy(pinHash = null)) },
             modifier = Modifier.fillMaxWidth()
         ) {
+            Icon(Icons.Outlined.Lock, contentDescription = null)
+            Spacer(modifier = Modifier.width(8.dp))
             Text("Supprimer le code PIN")
         }
 
@@ -66,6 +93,8 @@ fun SettingsScreen(app: FaithApp, navController: NavHostController) {
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
             modifier = Modifier.fillMaxWidth()
         ) {
+            Icon(Icons.Filled.Delete, contentDescription = null)
+            Spacer(modifier = Modifier.width(8.dp))
             Text("Tout réinitialiser")
         }
     }

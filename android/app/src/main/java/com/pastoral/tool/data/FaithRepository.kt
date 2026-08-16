@@ -11,6 +11,9 @@ import kotlinx.coroutines.launch
 class FaithRepository(private val db: AppDatabase) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
+    private val _ready = MutableStateFlow(false)
+    val ready: StateFlow<Boolean> = _ready.asStateFlow()
+
     private val _profile = MutableStateFlow(Profile())
     val profile: StateFlow<Profile> = _profile.asStateFlow()
     fun saveProfile(p: Profile) {
@@ -176,7 +179,10 @@ class FaithRepository(private val db: AppDatabase) {
             db.messageDao().getAll().collect { _messages.value = it.map { e -> e.toDomain() } }
         }
         scope.launch {
-            db.settingsDao().get().filterNotNull().collect { _settings.value = it.toDomain() }
+            db.settingsDao().get().first().let { s ->
+                _settings.value = s?.toDomain() ?: AppSettings()
+                _ready.value = true
+            }
         }
         scope.launch {
             db.favoriteVerseDao().getAll().collect { list ->

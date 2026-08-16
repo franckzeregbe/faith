@@ -1,11 +1,15 @@
 package com.pastoral.tool.ui.screens.pinlock
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
@@ -33,6 +37,20 @@ fun PinLockScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+        Box(
+            modifier = Modifier
+                .clip(MaterialTheme.shapes.large)
+                .background(MaterialTheme.colorScheme.primaryContainer)
+                .padding(20.dp)
+        ) {
+            Icon(
+                Icons.Filled.Lock,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                modifier = Modifier.size(40.dp)
+            )
+        }
+        Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = if (expectedHash == null) "Créer un code PIN" else "Entrez votre code PIN",
             style = MaterialTheme.typography.headlineMedium
@@ -51,7 +69,8 @@ fun PinLockScreen(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
             isError = error != null,
             supportingText = { error?.let { Text(it) } },
-            singleLine = true
+            singleLine = true,
+            shape = MaterialTheme.shapes.medium
         )
         Spacer(modifier = Modifier.height(16.dp))
         Button(

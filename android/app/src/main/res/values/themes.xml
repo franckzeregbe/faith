@@ -3,7 +3,7 @@
     <style name="Theme.FAITH" parent="android:Theme.Material.Light.NoActionBar" />
     <style name="Theme.FAITH.Splash" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/splash_background</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_vector</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_symbol</item>
         <item name="postSplashScreenTheme">@style/Theme.FAITH</item>
     </style>
 </resources>

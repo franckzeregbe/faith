@@ -1,10 +1,14 @@
 package com.pastoral.tool.notification
 
+import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
 import com.pastoral.tool.R
 
 object NotificationHelper {
@@ -22,15 +26,24 @@ object NotificationHelper {
         }
     }
 
+    fun notificationsEnabled(context: Context): Boolean {
+        return Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
+                ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) ==
+                PackageManager.PERMISSION_GRANTED
+    }
+
     fun show(context: Context, title: String, message: String) {
-        val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        if (!notificationsEnabled(context)) return
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_launcher_vector)
+            .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(title)
             .setContentText(message)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setAutoCancel(true)
             .build()
-        nm.notify(System.currentTimeMillis().toInt(), notification)
+        try {
+            NotificationManagerCompat.from(context).notify(System.currentTimeMillis().toInt(), notification)
+        } catch (_: SecurityException) {
+        }
     }
 }

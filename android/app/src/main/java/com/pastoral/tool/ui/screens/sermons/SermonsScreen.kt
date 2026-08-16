@@ -3,8 +3,16 @@ package com.pastoral.tool.ui.screens.sermons
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.MenuBook
+import androidx.compose.material.icons.automirrored.outlined.Notes
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.outlined.DateRange
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Mic
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.pastoral.tool.FaithApp
@@ -19,33 +27,43 @@ fun SermonsScreen(app: FaithApp) {
     var reference by remember { mutableStateOf("") }
     var notes by remember { mutableStateOf("") }
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+    Column(
+        modifier = Modifier.fillMaxSize().padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
         Text("Prédications & notes", style = MaterialTheme.typography.headlineMedium)
-        Spacer(modifier = Modifier.height(12.dp))
 
         OutlinedTextField(
             value = title,
             onValueChange = { title = it },
             label = { Text("Titre") },
+            leadingIcon = { Icon(Icons.Outlined.Mic, contentDescription = null) },
+            shape = MaterialTheme.shapes.medium,
             modifier = Modifier.fillMaxWidth()
         )
         OutlinedTextField(
             value = date,
             onValueChange = { date = it },
             label = { Text("Date") },
-            modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+            leadingIcon = { Icon(Icons.Outlined.DateRange, contentDescription = null) },
+            shape = MaterialTheme.shapes.medium,
+            modifier = Modifier.fillMaxWidth()
         )
         OutlinedTextField(
             value = reference,
             onValueChange = { reference = it },
             label = { Text("Référence biblique") },
-            modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+            leadingIcon = { Icon(Icons.AutoMirrored.Outlined.MenuBook, contentDescription = null) },
+            shape = MaterialTheme.shapes.medium,
+            modifier = Modifier.fillMaxWidth()
         )
         OutlinedTextField(
             value = notes,
             onValueChange = { notes = it },
             label = { Text("Notes") },
-            modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+            leadingIcon = { Icon(Icons.AutoMirrored.Outlined.Notes, contentDescription = null) },
+            shape = MaterialTheme.shapes.medium,
+            modifier = Modifier.fillMaxWidth()
         )
 
         Button(
@@ -66,33 +84,61 @@ fun SermonsScreen(app: FaithApp) {
                     notes = ""
                 }
             },
-            modifier = Modifier.padding(top = 12.dp)
+            modifier = Modifier.fillMaxWidth().height(48.dp)
         ) {
+            Icon(Icons.Filled.Add, contentDescription = null)
+            Spacer(modifier = Modifier.width(8.dp))
             Text("Ajouter")
         }
 
-        HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
+        HorizontalDivider(modifier = Modifier.padding(top = 4.dp))
 
-        LazyColumn {
-            items(sermons) { sermon ->
-                Card(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
-                    Row(
-                        modifier = Modifier.padding(12.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(sermon.title, style = MaterialTheme.typography.titleMedium)
-                            Text(
-                                "${sermon.date} • ${sermon.reference}",
-                                style = MaterialTheme.typography.bodySmall
-                            )
-                            if (sermon.notes.isNotBlank()) Text(
-                                sermon.notes,
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                        }
-                        TextButton(onClick = { app.repository.removeSermon(sermon.id) }) {
-                            Text("Suppr.")
+        if (sermons.isEmpty()) {
+            Column(
+                modifier = Modifier.fillMaxWidth().padding(vertical = 32.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Icon(
+                    Icons.Outlined.Mic,
+                    contentDescription = null,
+                    modifier = Modifier.size(48.dp),
+                    tint = MaterialTheme.colorScheme.outline
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    "Aucune prédication enregistrée",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        } else {
+            LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                items(sermons) { sermon ->
+                    OutlinedCard(modifier = Modifier.fillMaxWidth(), shape = MaterialTheme.shapes.medium) {
+                        Row(
+                            modifier = Modifier.padding(16.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(sermon.title, style = MaterialTheme.typography.titleMedium)
+                                Text(
+                                    "${sermon.date} • ${sermon.reference}",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                                if (sermon.notes.isNotBlank()) Text(
+                                    sermon.notes,
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                            }
+                            IconButton(onClick = { app.repository.removeSermon(sermon.id) }) {
+                                Icon(
+                                    Icons.Outlined.Delete,
+                                    contentDescription = "Supprimer",
+                                    tint = MaterialTheme.colorScheme.error
+                                )
+                            }
                         }
                     }
                 }

@@ -2,11 +2,61 @@ package com.pastoral.tool.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val FaithPrimary = Color(0xFFFF6F00)
+// --- Marque FAITH : or profond (dégradé du logo #a0784a -> #d7b77b), crème chaude ---
+val FaithPrimary = Color(0xFFB45309)
 val FaithOnPrimary = Color(0xFFFFFFFF)
-val FaithPrimaryContainer = Color(0xFFFFE0B2)
-val FaithOnPrimaryContainer = Color(0xFFBF360C)
-val FaithSecondary = Color(0xFF8D6E63)
-val FaithBackground = Color(0xFFFFF3E0)
-val FaithSurface = Color(0xFFFFFFFF)
+val FaithPrimaryContainer = Color(0xFFFFDCC2)
+val FaithOnPrimaryContainer = Color(0xFF3B1D00)
+
+val FaithSecondary = Color(0xFF7A5A2E)
+val FaithOnSecondary = Color(0xFFFFFFFF)
+val FaithSecondaryContainer = Color(0xFFF9DDB9)
+val FaithOnSecondaryContainer = Color(0xFF3E2700)
+
+val FaithTertiary = Color(0xFF9C3A3A)
+val FaithOnTertiary = Color(0xFFFFFFFF)
+val FaithTertiaryContainer = Color(0xFFFFDAD6)
+val FaithOnTertiaryContainer = Color(0xFF40000E)
+
+val FaithBackground = Color(0xFFFFF8EE)
+val FaithOnBackground = Color(0xFF251A0C)
+val FaithSurface = Color(0xFFFFFDF8)
+val FaithOnSurface = Color(0xFF251A0C)
+val FaithSurfaceVariant = Color(0xFFF2E4CE)
+val FaithOnSurfaceVariant = Color(0xFF5A4B35)
+val FaithSurfaceContainer = Color(0xFFFBEFDA)
+val FaithSurfaceContainerHigh = Color(0xFFF6E7CC)
+val FaithOutline = Color(0xFF8C7A62)
 val FaithError = Color(0xFFB00020)
+
+// --- Variantes sombres ---
+val FaithDarkPrimary = Color(0xFFF0B54A)
+val FaithDarkOnPrimary = Color(0xFF3E2700)
+val FaithDarkPrimaryContainer = Color(0xFF6B4308)
+val FaithDarkOnPrimaryContainer = Color(0xFFFFDDB0)
+
+val FaithDarkSecondary = Color(0xFFD9B98C)
+val FaithDarkOnSecondary = Color(0xFF3E2700)
+val FaithDarkSecondaryContainer = Color(0xFF55452E)
+val FaithDarkOnSecondaryContainer = Color(0xFFF6E0C4)
+
+val FaithDarkTertiary = Color(0xFFFFB3AA)
+val FaithDarkOnTertiary = Color(0xFF5D1318)
+val FaithDarkTertiaryContainer = Color(0xFF7A2A2A)
+val FaithDarkOnTertiaryContainer = Color(0xFFFFDAD6)
+
+val FaithDarkBackground = Color(0xFF171007)
+val FaithDarkOnBackground = Color(0xFFF1E8D8)
+val FaithDarkSurface = Color(0xFF21190D)
+val FaithDarkOnSurface = Color(0xFFF1E8D8)
+val FaithDarkSurfaceVariant = Color(0xFF4A3E2A)
+val FaithDarkOnSurfaceVariant = Color(0xFFD4C6AE)
+val FaithDarkSurfaceContainer = Color(0xFF2B2012)
+val FaithDarkSurfaceContainerHigh = Color(0xFF372A18)
+val FaithDarkOutline = Color(0xFF8F8169)
+val FaithDarkError = Color(0xFFFFB4AB)
+
+// --- Dégradé or de la marque (texte blanc lisible) ---
+val FaithGradientStart = Color(0xFF6B3A05)
+val FaithGradientMid = Color(0xFFA16207)
+val FaithGradientEnd = Color(0xFFD49B3D)

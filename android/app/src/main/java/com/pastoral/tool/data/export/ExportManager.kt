@@ -37,6 +37,15 @@ object ExportManager {
         context.startActivity(Intent.createChooser(intent, "Partager iCal"))
     }
 
+    fun shareText(context: Context, subject: String, text: String) {
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_SUBJECT, subject)
+            putExtra(Intent.EXTRA_TEXT, text)
+        }
+        context.startActivity(Intent.createChooser(intent, "Partager"))
+    }
+
     private fun getUri(context: Context, file: File): Uri {
         return FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
     }
@@ -46,7 +55,8 @@ object ExportManager {
         rows.forEach { row ->
             lines.add(row.joinToString(",") { csvSafe(it) })
         }
-        return lines.joinToString("\n")
+        // BOM UTF-8 pour une ouverture correcte des accents dans Excel
+        return "\uFEFF" + lines.joinToString("\n")
     }
 
     private fun csvSafe(s: String): String {
@@ -62,21 +72,30 @@ object ExportManager {
             "CALSCALE:GREGORIAN",
             "METHOD:PUBLISH"
         )
-        val fmt = SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'", Locale.US).apply { timeZone = TimeZone.getTimeZone("UTC") }
+        val dateTimeFmt = SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'", Locale.US).apply { timeZone = TimeZone.getTimeZone("UTC") }
+        val dateFmt = SimpleDateFormat("yyyyMMdd", Locale.US)
         events.forEach { event ->
-            val dtstamp = fmt.format(Date())
-            val dtstart = event.date?.let { fmt.format(it) } ?: dtstamp
+            val dtstamp = dateTimeFmt.format(Date())
             lines.add("BEGIN:VEVENT")
             lines.add("UID:${event.uid}")
             lines.add("DTSTAMP:$dtstamp")
-            lines.add("DTSTART:$dtstart")
-            lines.add("SUMMARY:${event.summary}")
-            if (event.description.isNotBlank()) lines.add("DESCRIPTION:${event.description}")
-            if (event.location.isNotBlank()) lines.add("LOCATION:${event.location}")
+            if (event.date != null) {
+                lines.add(if (event.allDay) "DTSTART;VALUE=DATE:${dateFmt.format(event.date)}" else "DTSTART:${dateTimeFmt.format(event.date)}")
+            }
+            lines.add("SUMMARY:${escapeICal(event.summary)}")
+            if (event.description.isNotBlank()) lines.add("DESCRIPTION:${escapeICal(event.description)}")
+            if (event.location.isNotBlank()) lines.add("LOCATION:${escapeICal(event.location)}")
             lines.add("END:VEVENT")
         }
         lines.add("END:VCALENDAR")
         return lines.joinToString("\r\n")
+    }
+
+    private fun escapeICal(s: String): String {
+        return s.replace("\\", "\\\\")
+            .replace(";", "\\;")
+            .replace(",", "\\,")
+            .replace("\n", "\\n")
     }
 }
 
@@ -85,5 +104,6 @@ data class ICalEvent(
     val summary: String,
     val description: String = "",
     val location: String = "",
-    val date: Date? = null
+    val date: Date? = null,
+    val allDay: Boolean = false
 )

@@ -1,86 +1,360 @@
 package com.pastoral.tool.ui.screens.home
 
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.outlined.Article
+import androidx.compose.material.icons.automirrored.outlined.MenuBook
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.outlined.DateRange
+import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material.icons.outlined.Groups
+import androidx.compose.material.icons.outlined.Mic
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.WavingHand
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.pastoral.tool.FaithApp
+import com.pastoral.tool.R
+import com.pastoral.tool.data.export.ExportManager
 import com.pastoral.tool.ui.navigation.*
+import com.pastoral.tool.ui.screens.bible.allVerses
+import com.pastoral.tool.ui.theme.FaithGradientEnd
+import com.pastoral.tool.ui.theme.FaithGradientMid
+import com.pastoral.tool.ui.theme.FaithGradientStart
+import java.util.Calendar
+
+private data class StatItem(val label: String, val value: String, val icon: ImageVector, val color: Color)
+
+@Composable
+private fun StatsDonutChart(stats: List<StatItem>) {
+    val total = stats.sumOf { it.value.toInt() }
+    val progress by animateFloatAsState(
+        targetValue = 1f,
+        animationSpec = androidx.compose.animation.core.tween(900, easing = FastOutSlowInEasing),
+        label = "donut"
+    )
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.large,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainer
+        )
+    ) {
+        Column(modifier = Modifier.padding(20.dp)) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(190.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                val trackColor = MaterialTheme.colorScheme.surfaceContainerHigh
+                Canvas(modifier = Modifier.fillMaxSize()) {
+                    val stroke = 28.dp.toPx()
+                    val diameter = minOf(size.width, size.height) - stroke * 2
+                    val topLeft = Offset((size.width - diameter) / 2f, (size.height - diameter) / 2f)
+                    val arcSize = Size(diameter, diameter)
+
+                    drawArc(
+                        color = trackColor,
+                        startAngle = 0f,
+                        sweepAngle = 360f,
+                        useCenter = false,
+                        topLeft = topLeft,
+                        size = arcSize,
+                        style = Stroke(width = stroke)
+                    )
+
+                    if (total > 0) {
+                        var startAngle = -90f
+                        stats.forEach { item ->
+                            val count = item.value.toInt()
+                            if (count > 0) {
+                                val sweep = 360f * count / total
+                                drawArc(
+                                    color = item.color,
+                                    startAngle = startAngle,
+                                    sweepAngle = sweep * progress,
+                                    useCenter = false,
+                                    topLeft = topLeft,
+                                    size = arcSize,
+                                    style = Stroke(width = stroke, cap = StrokeCap.Round)
+                                )
+                                startAngle += sweep
+                            }
+                        }
+                    }
+                }
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        total.toString(),
+                        style = MaterialTheme.typography.headlineLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        "éléments",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            stats.forEach { item ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 3.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(10.dp)
+                            .clip(CircleShape)
+                            .background(item.color)
+                    )
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Text(
+                        item.label,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Text(
+                        item.value,
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun QuickAccessCard(
+    label: String,
+    icon: ImageVector,
+    color: Color,
+    onClick: () -> Unit
+) {
+    Card(
+        onClick = onClick,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        shape = MaterialTheme.shapes.medium,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainer
+        )
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .background(color.copy(alpha = 0.16f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = color,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+            Spacer(modifier = Modifier.width(14.dp))
+            Text(
+                label,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.weight(1f)
+            )
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.outline
+            )
+        }
+    }
+}
 
 @Composable
 fun HomeScreen(app: FaithApp, navController: NavHostController) {
+    val context = LocalContext.current
     val profile by app.repository.profile.collectAsState()
     val visits by app.repository.visits.collectAsState()
     val contacts by app.repository.contacts.collectAsState()
     val cults by app.repository.cults.collectAsState()
     val converts by app.repository.converts.collectAsState()
     val prayers by app.repository.prayers.collectAsState()
+    val sermons by app.repository.sermons.collectAsState()
+
+    val primary = MaterialTheme.colorScheme.primary
+    val secondary = MaterialTheme.colorScheme.secondary
+    val tertiary = MaterialTheme.colorScheme.tertiary
 
     val stats = listOf(
-        "Visites" to visits.size.toString(),
-        "Contacts" to contacts.size.toString(),
-        "Cultes" to cults.size.toString(),
-        "Âmes" to converts.size.toString(),
-        "Prières" to prayers.size.toString()
+        StatItem("Visites", visits.size.toString(), Icons.Outlined.DateRange, primary),
+        StatItem("Contacts", contacts.size.toString(), Icons.Outlined.Person, secondary),
+        StatItem("Cultes", cults.size.toString(), Icons.Outlined.Groups, tertiary),
+        StatItem("Âmes", converts.size.toString(), Icons.Outlined.FavoriteBorder, Color(0xFF2F6B4F)),
+        StatItem("Prières", prayers.size.toString(), Icons.Outlined.WavingHand, Color(0xFF2C6E9C)),
+        StatItem("Prédications", sermons.size.toString(), Icons.Outlined.Mic, Color(0xFF7A4E9C))
     )
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        if (profile.name.isNotBlank()) {
-            Text(
-                "Bienvenue, ${profile.name} !",
-                style = MaterialTheme.typography.headlineMedium
-            )
-            Text(
-                profile.church,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.secondary
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-        }
+    val verse = remember {
+        val dayOfYear = Calendar.getInstance().get(Calendar.DAY_OF_YEAR)
+        allVerses[(dayOfYear - 1) % allVerses.size]
+    }
 
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            items(stats) { (label, value) ->
-                ElevatedCard(modifier = Modifier.fillMaxWidth()) {
-                    Column(modifier = Modifier.padding(16.dp)) {
+    LazyColumn(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+        item {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    modifier = Modifier
+                        .size(52.dp)
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(Color.White)
+                        .padding(6.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.logo_faith),
+                        contentDescription = "Logo FAITH",
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+                Spacer(modifier = Modifier.width(12.dp))
+                Column {
+                    if (profile.name.isNotBlank()) {
                         Text(
-                            label,
-                            style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.primary
+                            "Bienvenue, ${profile.name} !",
+                            style = MaterialTheme.typography.headlineSmall
                         )
-                        Text(value, style = MaterialTheme.typography.headlineMedium)
+                    } else {
+                        Text(
+                            "Bienvenue !",
+                            style = MaterialTheme.typography.headlineSmall
+                        )
+                    }
+                    if (profile.church.isNotBlank()) {
+                        Text(
+                            profile.church,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.secondary
+                        )
                     }
                 }
             }
+            Spacer(modifier = Modifier.height(16.dp))
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
-        Text("Accès rapide", style = MaterialTheme.typography.titleMedium)
-        Spacer(modifier = Modifier.height(8.dp))
-
-        val quickItems = listOf(
-            DrawerItem(VisitsRoute, "Visites", "📋"),
-            DrawerItem(ContactsRoute, "Contacts", "👥"),
-            DrawerItem(MessagesRoute, "Inspiration", "✉️"),
-            DrawerItem(BibleRoute, "Bible", "📜")
-        )
-
-        quickItems.forEach { item ->
-            OutlinedButton(
-                onClick = { navController.navigate(item.route) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 4.dp)
+        item {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = MaterialTheme.shapes.large,
+                colors = CardDefaults.cardColors(containerColor = Color.Transparent)
             ) {
-                Text("${item.icon} ${item.label}")
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            Brush.verticalGradient(listOf(FaithGradientStart, FaithGradientMid, FaithGradientEnd))
+                        )
+                ) {
+                    Row(
+                        modifier = Modifier.padding(20.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                "Verset du jour",
+                                style = MaterialTheme.typography.labelLarge,
+                                color = Color.White.copy(alpha = 0.9f)
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                verse.text,
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = FontWeight.Medium,
+                                color = Color.White
+                            )
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Text(
+                                verse.ref,
+                                style = MaterialTheme.typography.labelMedium,
+                                color = Color.White.copy(alpha = 0.85f)
+                            )
+                        }
+                        IconButton(onClick = {
+                            ExportManager.shareText(context, "Verset du jour", "${verse.ref}\n${verse.text}")
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.Share,
+                                contentDescription = "Partager",
+                                tint = Color.White
+                            )
+                        }
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(24.dp))
+        }
+
+        item {
+            Text("Statistiques", style = MaterialTheme.typography.titleMedium)
+            Spacer(modifier = Modifier.height(8.dp))
+            StatsDonutChart(stats)
+            Spacer(modifier = Modifier.height(24.dp))
+        }
+
+        item {
+            Text("Accès rapide", style = MaterialTheme.typography.titleMedium)
+            Spacer(modifier = Modifier.height(8.dp))
+
+            val quickItems: List<Pair<Any, Triple<String, ImageVector, Color>>> = listOf(
+                VisitsRoute to Triple("Visites", Icons.Outlined.DateRange, primary),
+                ContactsRoute to Triple("Contacts", Icons.Outlined.Person, secondary),
+                MessagesRoute to Triple("Inspiration", Icons.AutoMirrored.Outlined.Article, tertiary),
+                BibleRoute to Triple("Bible", Icons.AutoMirrored.Outlined.MenuBook, Color(0xFF2F6B4F))
+            )
+
+            quickItems.forEach { (route, item) ->
+                QuickAccessCard(
+                    label = item.first,
+                    icon = item.second,
+                    color = item.third,
+                    onClick = { navController.navigate(route) }
+                )
             }
         }
     }
