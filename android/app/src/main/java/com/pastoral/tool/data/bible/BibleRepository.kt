@@ -56,6 +56,7 @@ object BibleRepository {
         return withContext(Dispatchers.IO) {
             val books = context.assets.open("bible_fr.json").use { input ->
                 val text = input.bufferedReader(Charsets.UTF_8).use { it.readText() }
+                    .removePrefix("\uFEFF")
                 val dto = json.decodeFromString<List<BibleBookDto>>(text)
                 dto.filter { it.name.isNotBlank() && it.chapters.isNotEmpty() }
                     .map { book ->

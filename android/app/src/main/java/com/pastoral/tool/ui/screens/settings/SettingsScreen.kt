@@ -1,8 +1,10 @@
 package com.pastoral.tool.ui.screens.settings
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Notifications
@@ -10,17 +12,21 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.pastoral.tool.FaithApp
 import com.pastoral.tool.domain.AppSettings
 import com.pastoral.tool.domain.Profile
 import com.pastoral.tool.ui.navigation.HomeRoute
+import com.pastoral.tool.ui.screens.pinlock.sha256
 
 @Composable
 fun SettingsScreen(app: FaithApp, navController: NavHostController) {
     val settings by app.repository.settings.collectAsState()
     var showReset by remember { mutableStateOf(false) }
+    var showPinSetup by remember { mutableStateOf(false) }
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         Text("Paramètres", style = MaterialTheme.typography.headlineMedium)
@@ -79,12 +85,24 @@ fun SettingsScreen(app: FaithApp, navController: NavHostController) {
         Spacer(modifier = Modifier.height(8.dp))
 
         OutlinedButton(
-            onClick = { app.repository.saveSettings(settings.copy(pinHash = null)) },
+            onClick = { showPinSetup = true },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Icon(Icons.Outlined.Lock, contentDescription = null)
+            Icon(Icons.Filled.Lock, contentDescription = null)
             Spacer(modifier = Modifier.width(8.dp))
-            Text("Supprimer le code PIN")
+            Text(if (settings.pinHash == null) "Définir un code PIN" else "Modifier le code PIN")
+        }
+
+        if (settings.pinHash != null) {
+            Spacer(modifier = Modifier.height(8.dp))
+            OutlinedButton(
+                onClick = { app.repository.saveSettings(settings.copy(pinHash = null)) },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(Icons.Outlined.Lock, contentDescription = null)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Supprimer le code PIN")
+            }
         }
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -97,6 +115,16 @@ fun SettingsScreen(app: FaithApp, navController: NavHostController) {
             Spacer(modifier = Modifier.width(8.dp))
             Text("Tout réinitialiser")
         }
+    }
+
+    if (showPinSetup) {
+        PinSetupDialog(
+            onDismiss = { showPinSetup = false },
+            onSave = { hash ->
+                app.repository.saveSettings(settings.copy(pinHash = hash))
+                showPinSetup = false
+            }
+        )
     }
 
     if (showReset) {
@@ -130,4 +158,70 @@ fun SettingsScreen(app: FaithApp, navController: NavHostController) {
             }
         )
     }
+}
+
+@Composable
+private fun PinSetupDialog(onDismiss: () -> Unit, onSave: (String) -> Unit) {
+    var pin by remember { mutableStateOf("") }
+    var confirm by remember { mutableStateOf("") }
+    var error by remember { mutableStateOf<String?>(null) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Définir un code PIN") },
+        text = {
+            Column {
+                OutlinedTextField(
+                    value = pin,
+                    onValueChange = {
+                        if (it.length <= 6 && it.all { c -> c.isDigit() }) {
+                            pin = it
+                            error = null
+                        }
+                    },
+                    label = { Text("Nouveau PIN (4-6 chiffres)") },
+                    visualTransformation = PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
+                    isError = error != null,
+                    singleLine = true,
+                    shape = MaterialTheme.shapes.medium,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = confirm,
+                    onValueChange = {
+                        if (it.length <= 6 && it.all { c -> c.isDigit() }) {
+                            confirm = it
+                            error = null
+                        }
+                    },
+                    label = { Text("Confirmer le PIN") },
+                    visualTransformation = PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
+                    isError = error != null,
+                    supportingText = { error?.let { Text(it) } },
+                    singleLine = true,
+                    shape = MaterialTheme.shapes.medium,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = {
+                when {
+                    pin.length < 4 -> error = "Le PIN doit faire au moins 4 chiffres"
+                    pin != confirm -> error = "Les codes ne correspondent pas"
+                    else -> onSave(pin.sha256())
+                }
+            }) {
+                Text("Enregistrer")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Annuler")
+            }
+        }
+    )
 }

@@ -2,7 +2,9 @@ package com.pastoral.tool.ui.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Article
+import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.automirrored.outlined.Article
+import androidx.compose.material.icons.automirrored.outlined.MenuBook
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Church
 import androidx.compose.material.icons.filled.DateRange
@@ -13,6 +15,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.AccountCircle
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Church
 import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material.icons.outlined.FavoriteBorder
@@ -20,7 +23,6 @@ import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Mic
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.PersonAdd
-import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
 
 data class DrawerSection(
@@ -41,7 +43,8 @@ val drawerSections = listOf(
         label = "Général",
         items = listOf(
             DrawerItem(HomeRoute, "Accueil", Icons.Outlined.Home, Icons.Filled.Home),
-            DrawerItem(ProfileRoute, "Profil", Icons.Outlined.AccountCircle, Icons.Filled.AccountCircle)
+            DrawerItem(ProfileRoute, "Profil", Icons.Outlined.AccountCircle, Icons.Filled.AccountCircle),
+            DrawerItem(BibleRoute, "Bible", Icons.AutoMirrored.Outlined.MenuBook, Icons.AutoMirrored.Filled.MenuBook)
         ),
         expandable = false
     ),

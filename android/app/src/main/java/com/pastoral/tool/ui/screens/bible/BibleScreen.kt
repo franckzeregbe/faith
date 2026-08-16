@@ -35,8 +35,12 @@ fun BibleScreen(app: FaithApp) {
     val context = LocalContext.current
     val favorites by app.repository.favoriteVerses.collectAsState()
 
-    val books by produceState<List<BibleBook>>(initialValue = emptyList()) {
-        value = BibleRepository.load(context)
+    val books by produceState<List<BibleBook>?>(initialValue = null) {
+        value = try {
+            BibleRepository.load(context)
+        } catch (e: Exception) {
+            null
+        }
     }
 
     var selectedBook by remember { mutableStateOf<BibleBook?>(null) }
@@ -200,7 +204,8 @@ fun BibleScreen(app: FaithApp) {
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
-                Text("${books.size} livres · ${searchResults.size} résultat(s)", style = MaterialTheme.typography.bodySmall)
+                val loadedBooks = books
+                Text("${loadedBooks?.size ?: 0} livres · ${searchResults.size} résultat(s)", style = MaterialTheme.typography.bodySmall)
 
                 when {
                     showFavoritesOnly -> {
@@ -238,7 +243,25 @@ fun BibleScreen(app: FaithApp) {
                             }
                         }
                     }
-                    books.isEmpty() -> {
+                    loadedBooks == null -> {
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Icon(
+                                    imageVector = Icons.Outlined.Search,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(40.dp),
+                                    tint = MaterialTheme.colorScheme.error
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    "Impossible de charger la Bible.",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+                    }
+                    loadedBooks.isEmpty() -> {
                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                             CircularProgressIndicator()
                         }
@@ -253,7 +276,7 @@ fun BibleScreen(app: FaithApp) {
                                     modifier = Modifier.padding(vertical = 6.dp)
                                 )
                             }
-                            items(books.take(39)) { book ->
+                            items(loadedBooks.take(39)) { book ->
                                 BookRow(book = book, onClick = { selectedBook = book })
                             }
                             item {
@@ -264,7 +287,7 @@ fun BibleScreen(app: FaithApp) {
                                     modifier = Modifier.padding(vertical = 6.dp)
                                 )
                             }
-                            items(books.drop(39)) { book ->
+                            items(loadedBooks.drop(39)) { book ->
                                 BookRow(book = book, onClick = { selectedBook = book })
                             }
                         }

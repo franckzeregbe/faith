@@ -3,12 +3,10 @@ package com.pastoral.tool.ui.screens.home
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.outlined.Article
@@ -42,6 +40,7 @@ import com.pastoral.tool.R
 import com.pastoral.tool.data.export.ExportManager
 import com.pastoral.tool.ui.navigation.*
 import com.pastoral.tool.ui.screens.bible.allVerses
+import com.pastoral.tool.ui.screens.profile.ProfileAvatar
 import com.pastoral.tool.ui.theme.FaithGradientEnd
 import com.pastoral.tool.ui.theme.FaithGradientMid
 import com.pastoral.tool.ui.theme.FaithGradientStart
@@ -238,40 +237,47 @@ fun HomeScreen(app: FaithApp, navController: NavHostController) {
 
     LazyColumn(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         item {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    modifier = Modifier
-                        .size(52.dp)
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(Color.White)
-                        .padding(6.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Image(
-                        painter = painterResource(R.drawable.logo_faith),
-                        contentDescription = "Logo FAITH",
-                        modifier = Modifier.fillMaxSize()
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(MaterialTheme.shapes.large)
+                    .background(
+                        Brush.horizontalGradient(listOf(FaithGradientStart, FaithGradientMid, FaithGradientEnd))
                     )
-                }
-                Spacer(modifier = Modifier.width(12.dp))
-                Column {
-                    if (profile.name.isNotBlank()) {
+            ) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 18.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    ProfileAvatar(
+                        profile = profile,
+                        size = 56.dp,
+                        backgroundColor = Color.White
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            "Bienvenue, ${profile.name} !",
-                            style = MaterialTheme.typography.headlineSmall
+                            if (profile.name.isBlank()) "Bienvenue !" else "Bienvenue, ${profile.name} !",
+                            style = MaterialTheme.typography.headlineSmall,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color.White
                         )
-                    } else {
-                        Text(
-                            "Bienvenue !",
-                            style = MaterialTheme.typography.headlineSmall
-                        )
-                    }
-                    if (profile.church.isNotBlank()) {
-                        Text(
-                            profile.church,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.secondary
-                        )
+                        if (profile.role.isNotBlank()) {
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                profile.role,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = Color.White.copy(alpha = 0.9f)
+                            )
+                        }
+                        if (profile.church.isNotBlank()) {
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                profile.church,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = Color.White.copy(alpha = 0.8f)
+                            )
+                        }
                     }
                 }
             }
@@ -292,49 +298,48 @@ fun HomeScreen(app: FaithApp, navController: NavHostController) {
                         )
                 ) {
                     Row(
-                        modifier = Modifier.padding(20.dp),
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
                                 "Verset du jour",
-                                style = MaterialTheme.typography.labelLarge,
+                                style = MaterialTheme.typography.labelMedium,
                                 color = Color.White.copy(alpha = 0.9f)
                             )
-                            Spacer(modifier = Modifier.height(8.dp))
+                            Spacer(modifier = Modifier.height(4.dp))
                             Text(
                                 verse.text,
-                                style = MaterialTheme.typography.bodyLarge,
+                                style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.Medium,
+                                maxLines = 3,
+                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                                 color = Color.White
                             )
-                            Spacer(modifier = Modifier.height(6.dp))
+                            Spacer(modifier = Modifier.height(4.dp))
                             Text(
                                 verse.ref,
-                                style = MaterialTheme.typography.labelMedium,
+                                style = MaterialTheme.typography.labelSmall,
                                 color = Color.White.copy(alpha = 0.85f)
                             )
                         }
-                        IconButton(onClick = {
-                            ExportManager.shareText(context, "Verset du jour", "${verse.ref}\n${verse.text}")
-                        }) {
+                        IconButton(
+                            onClick = {
+                                ExportManager.shareText(context, "Verset du jour", "${verse.ref}\n${verse.text}")
+                            },
+                            modifier = Modifier.size(36.dp)
+                        ) {
                             Icon(
                                 imageVector = Icons.Default.Share,
                                 contentDescription = "Partager",
-                                tint = Color.White
+                                tint = Color.White,
+                                modifier = Modifier.size(18.dp)
                             )
                         }
                     }
                 }
             }
-            Spacer(modifier = Modifier.height(24.dp))
-        }
-
-        item {
-            Text("Statistiques", style = MaterialTheme.typography.titleMedium)
-            Spacer(modifier = Modifier.height(8.dp))
-            StatsDonutChart(stats)
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(20.dp))
         }
 
         item {
@@ -356,6 +361,13 @@ fun HomeScreen(app: FaithApp, navController: NavHostController) {
                     onClick = { navController.navigate(route) }
                 )
             }
+            Spacer(modifier = Modifier.height(24.dp))
+        }
+
+        item {
+            Text("Statistiques", style = MaterialTheme.typography.titleMedium)
+            Spacer(modifier = Modifier.height(8.dp))
+            StatsDonutChart(stats)
         }
     }
 }
