@@ -9,6 +9,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import kotlinx.coroutines.launch
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -111,6 +114,9 @@ fun ProfileScreen(app: FaithApp) {
     val context = LocalContext.current
     val resolver: ContentResolver = context.contentResolver
 
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+
     val photoPicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
@@ -137,7 +143,17 @@ fun ProfileScreen(app: FaithApp) {
         }
     }
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        contentWindowInsets = WindowInsets(0, 0, 0, 0)
+    ) { _ ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .imePadding()
+                .padding(16.dp)
+        ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -226,12 +242,14 @@ fun ProfileScreen(app: FaithApp) {
                         slogan = slogan.takeIf { it.isNotBlank() }
                     )
                 )
+                scope.launch { snackbarHostState.showSnackbar("Profil enregistré") }
             },
             modifier = Modifier.fillMaxWidth()
         ) {
             Icon(Icons.Filled.Check, contentDescription = null)
             Spacer(modifier = Modifier.width(8.dp))
             Text("Enregistrer")
+        }
         }
     }
 }

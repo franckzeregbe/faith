@@ -2,16 +2,16 @@ package com.pastoral.tool.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// --- Marque FAITH : or profond (dégradé du logo #a0784a -> #d7b77b), crème chaude ---
-val FaithPrimary = Color(0xFFB45309)
+// --- Marque FAITH : or profond et chaleureux (moins agressif que le brun d'origine) ---
+val FaithPrimary = Color(0xFFA86E34)
 val FaithOnPrimary = Color(0xFFFFFFFF)
-val FaithPrimaryContainer = Color(0xFFFFDCC2)
-val FaithOnPrimaryContainer = Color(0xFF3B1D00)
+val FaithPrimaryContainer = Color(0xFFF7E3C9)
+val FaithOnPrimaryContainer = Color(0xFF43290C)
 
-val FaithSecondary = Color(0xFF7A5A2E)
+val FaithSecondary = Color(0xFF9A7B52)
 val FaithOnSecondary = Color(0xFFFFFFFF)
-val FaithSecondaryContainer = Color(0xFFF9DDB9)
-val FaithOnSecondaryContainer = Color(0xFF3E2700)
+val FaithSecondaryContainer = Color(0xFFF3E4CB)
+val FaithOnSecondaryContainer = Color(0xFF453117)
 
 val FaithTertiary = Color(0xFF9C3A3A)
 val FaithOnTertiary = Color(0xFFFFFFFF)
@@ -23,10 +23,10 @@ val FaithOnBackground = Color(0xFF251A0C)
 val FaithSurface = Color(0xFFFFFDF8)
 val FaithOnSurface = Color(0xFF251A0C)
 val FaithSurfaceVariant = Color(0xFFF2E4CE)
-val FaithOnSurfaceVariant = Color(0xFF5A4B35)
+val FaithOnSurfaceVariant = Color(0xFF6B5A41)
 val FaithSurfaceContainer = Color(0xFFFBEFDA)
 val FaithSurfaceContainerHigh = Color(0xFFF6E7CC)
-val FaithOutline = Color(0xFF8C7A62)
+val FaithOutline = Color(0xFFA38C6E)
 val FaithError = Color(0xFFB00020)
 
 // --- Variantes sombres ---
@@ -56,7 +56,7 @@ val FaithDarkSurfaceContainerHigh = Color(0xFF372A18)
 val FaithDarkOutline = Color(0xFF8F8169)
 val FaithDarkError = Color(0xFFFFB4AB)
 
-// --- Dégradé or de la marque (texte blanc lisible) ---
-val FaithGradientStart = Color(0xFF6B3A05)
-val FaithGradientMid = Color(0xFFA16207)
-val FaithGradientEnd = Color(0xFFD49B3D)
+// --- Dégradé or de la marque (adouci : départ moins brun/foncé) ---
+val FaithGradientStart = Color(0xFF8A5A22)
+val FaithGradientMid = Color(0xFFA86E34)
+val FaithGradientEnd = Color(0xFFC89244)

@@ -2,8 +2,8 @@ package com.pastoral.tool.ui.screens.contacts
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -36,7 +36,12 @@ fun ContactsScreen(app: FaithApp) {
     var address by remember { mutableStateOf("") }
     var category by remember { mutableStateOf("") }
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(16.dp)
+    ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -161,8 +166,8 @@ fun ContactsScreen(app: FaithApp) {
                 )
             }
         } else {
-            LazyColumn {
-                items(contacts) { contact ->
+            Column {
+                contacts.forEach { contact ->
                     ElevatedCard(
                         modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
                         shape = MaterialTheme.shapes.medium

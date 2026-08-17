@@ -1,8 +1,8 @@
 package com.pastoral.tool.ui.screens.prayers
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.DateRange
@@ -26,7 +26,10 @@ fun PrayersScreen(app: FaithApp) {
     var date by remember { mutableStateOf("") }
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Text("Suivi des prières", style = MaterialTheme.typography.headlineMedium)
@@ -100,8 +103,8 @@ fun PrayersScreen(app: FaithApp) {
                 )
             }
         } else {
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                items(prayers) { prayer ->
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                prayers.forEach { prayer ->
                     OutlinedCard(modifier = Modifier.fillMaxWidth(), shape = MaterialTheme.shapes.medium) {
                         Row(
                             modifier = Modifier.padding(16.dp),

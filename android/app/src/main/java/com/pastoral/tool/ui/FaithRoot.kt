@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
@@ -298,6 +299,21 @@ fun MainScaffold(app: FaithApp, navController: NavHostController) {
                             }
                         },
                         actions = {
+                            IconButton(
+                                onClick = {
+                                    if (!navController.popBackStack()) {
+                                        if (currentRoute != HomeRoute::class.qualifiedName) {
+                                            navController.navigate(HomeRoute)
+                                        }
+                                    }
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = "Retour",
+                                    tint = Color.White
+                                )
+                            }
                             var settingsMenuExpanded by remember { mutableStateOf(false) }
                             Box {
                                 IconButton(onClick = { settingsMenuExpanded = true }) {
