@@ -22,6 +22,7 @@ import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.automirrored.outlined.HelpOutline
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Bookmark
+import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
@@ -47,6 +48,11 @@ import com.pastoral.tool.data.bible.BibleReference
 import com.pastoral.tool.data.bible.BibleReferenceParser
 import com.pastoral.tool.data.bible.BibleRepository
 import com.pastoral.tool.data.bible.BibleResult
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.widget.Toast
+import androidx.compose.foundation.background
+import kotlinx.serialization.Serializable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -58,6 +64,14 @@ private val SUGGESTED_VERSES = listOf(
     "Romains 8:28",
     "Philippiens 4:13",
     "Apocalypse 21:4"
+)
+
+@Serializable
+private data class BibleReadingState(
+    val bookIndex: Int = -1,
+    val chapter: Int = -1,
+    val verse: Int = 1,
+    val fontSizeSp: Float = 18f
 )
 
 @Composable
@@ -80,6 +94,9 @@ fun BibleScreen(app: FaithApp) {
     var showFavoritesOnly by remember { mutableStateOf(false) }
     var searchResults by remember { mutableStateOf<List<BibleResult>>(emptyList()) }
     var referenceError by remember { mutableStateOf<String?>(null) }
+    var bookFilter by remember { mutableStateOf(0) } // 0=Tous, 1=AT, 2=NT
+    val localStorage = app.localStorage
+    var readingState by remember { mutableStateOf(localStorage.load("bible_state.json", BibleReadingState())) }
 
     LaunchedEffect(query) {
         if (query.isBlank() || query.length < 3) {
@@ -98,6 +115,13 @@ fun BibleScreen(app: FaithApp) {
     LaunchedEffect(books != null) {
         if (books != null) {
             withContext(Dispatchers.IO) { BibleRepository.loadFlat(context) }
+        }
+    }
+
+    LaunchedEffect(selectedBookIndex, selectedChapter) {
+        if (selectedBookIndex != null && selectedChapter != null) {
+            readingState = readingState.copy(bookIndex = selectedBookIndex!!, chapter = selectedChapter!!)
+            localStorage.save("bible_state.json", readingState)
         }
     }
 
@@ -121,6 +145,27 @@ fun BibleScreen(app: FaithApp) {
                     canNext = ch < chapterCount
                 )
                 Spacer(modifier = Modifier.height(8.dp))
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Text(
+                        "Texte",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    TextButton(onClick = {
+                        readingState = readingState.copy(fontSizeSp = (readingState.fontSizeSp - 2f).coerceAtLeast(14f))
+                        localStorage.save("bible_state.json", readingState)
+                    }) { Text("A−", fontWeight = FontWeight.Bold) }
+                    Text(
+                        "${readingState.fontSizeSp.toInt()}",
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    TextButton(onClick = {
+                        readingState = readingState.copy(fontSizeSp = (readingState.fontSizeSp + 2f).coerceAtMost(28f))
+                        localStorage.save("bible_state.json", readingState)
+                    }) { Text("A+", fontWeight = FontWeight.Bold) }
+                }
+                Spacer(modifier = Modifier.height(4.dp))
                 VerseList(
                     chapterVerses = chapterVerses,
                     bookName = currentBook.name,
@@ -129,7 +174,8 @@ fun BibleScreen(app: FaithApp) {
                     app = app,
                     pendingVerse = pendingVerse,
                     onPendingConsumed = { pendingVerse = null },
-                    queryHighlight = null
+                    queryHighlight = null,
+                    fontSizeSp = readingState.fontSizeSp
                 )
             }
             currentBook != null -> {
@@ -228,6 +274,28 @@ fun BibleScreen(app: FaithApp) {
                                 }
                             )
                         }
+                        // Filtre par testament + reprise de lecture
+                        if (!favoritesOnly && query.isBlank()) {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                FilterChip(selected = bookFilter == 0, onClick = { bookFilter = 0 }, label = { Text("Tous") })
+                                FilterChip(selected = bookFilter == 1, onClick = { bookFilter = 1 }, label = { Text("Ancien T.") })
+                                FilterChip(selected = bookFilter == 2, onClick = { bookFilter = 2 }, label = { Text("Nouveau T.") })
+                            }
+                            if (readingState.bookIndex in 0 until (loadedBooks?.size ?: 0)) {
+                                Spacer(modifier = Modifier.height(10.dp))
+                                ContinueReadingCard(
+                                    state = readingState,
+                                    books = loadedBooks!!,
+                                    onClick = {
+                                        selectedBookIndex = readingState.bookIndex
+                                        selectedChapter = readingState.chapter
+                                        query = ""
+                                        referenceError = null
+                                    }
+                                )
+                            }
+                        }
                         if (!favoritesOnly && query.isBlank()) {
                             Spacer(modifier = Modifier.height(12.dp))
                             Text(
@@ -302,14 +370,27 @@ fun BibleScreen(app: FaithApp) {
                         } else if (query.isNotBlank()) {
                             EmptyState("Aucun résultat pour « $query ».")
                         } else {
-                            val list = loadedBooks
+                            val bibleBooks = loadedBooks!!
+                            val grouped = buildList {
+                                if (bookFilter != 2) {
+                                    val ot = bibleBooks.mapIndexed { i, b -> i to b }.filter { it.first < 39 }
+                                    if (ot.isNotEmpty()) add("Ancien Testament" to ot)
+                                }
+                                if (bookFilter != 1) {
+                                    val nt = bibleBooks.mapIndexed { i, b -> i to b }.filter { it.first >= 39 }
+                                    if (nt.isNotEmpty()) add("Nouveau Testament" to nt)
+                                }
+                            }
                             LazyColumn(modifier = Modifier.fillMaxSize()) {
-                                itemsIndexed(list) { index, book ->
-                                    BookRow(
-                                        index = index,
-                                        book = book,
-                                        onClick = { selectedBookIndex = index }
-                                    )
+                                grouped.forEach { (title, entries) ->
+                                    item { SectionHeader(title) }
+                                    items(entries) { (index, book) ->
+                                        BookRow(
+                                            index = index,
+                                            book = book,
+                                            onClick = { selectedBookIndex = index }
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -387,7 +468,8 @@ private fun VerseList(
     app: FaithApp,
     pendingVerse: Pair<Int, Int>?,
     onPendingConsumed: () -> Unit,
-    queryHighlight: String?
+    queryHighlight: String?,
+    fontSizeSp: Float = 18f
 ) {
     val context = LocalContext.current
     val listState = rememberLazyListState()
@@ -423,7 +505,8 @@ private fun VerseList(
                         "$ref\n$text\n\n— Partagé depuis FAITH"
                     )
                 },
-                highlight = queryHighlight
+                highlight = queryHighlight,
+                fontSizeSp = fontSizeSp
             )
         }
     }
@@ -438,8 +521,10 @@ private fun VerseCard(
     isTarget: Boolean,
     onToggleFav: () -> Unit,
     onShare: () -> Unit,
-    highlight: String?
+    highlight: String?,
+    fontSizeSp: Float = 18f
 ) {
+    val context = LocalContext.current
     val containerColor = if (isTarget) {
         MaterialTheme.colorScheme.primaryContainer
     } else {
@@ -467,6 +552,7 @@ private fun VerseCard(
                 Text(
                     highlightAnnotated(text, highlight, MaterialTheme.colorScheme.tertiaryContainer),
                     style = MaterialTheme.typography.bodyLarge,
+                    fontSize = fontSizeSp.sp,
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -495,6 +581,18 @@ private fun VerseCard(
                         contentDescription = "Favori",
                         tint = if (isFav) MaterialTheme.colorScheme.primary
                         else MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                IconButton(onClick = {
+                    val cm = context.getSystemService(ClipboardManager::class.java)!!
+                    cm.setPrimaryClip(ClipData.newPlainText(ref, "$ref\n$text"))
+                    Toast.makeText(context, "Verset copié", Toast.LENGTH_SHORT).show()
+                }) {
+                    Icon(
+                        imageVector = Icons.Filled.ContentCopy,
+                        contentDescription = "Copier",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(20.dp)
                     )
                 }
             }
@@ -706,6 +804,70 @@ private fun EmptyState(message: String) {
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
+    }
+}
+
+@Composable
+private fun SectionHeader(title: String) {
+    Text(
+        title,
+        style = MaterialTheme.typography.titleSmall,
+        fontWeight = FontWeight.Bold,
+        color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.surface)
+            .padding(horizontal = 4.dp, vertical = 8.dp)
+    )
+}
+
+@Composable
+private fun ContinueReadingCard(
+    state: BibleReadingState,
+    books: List<BibleBook>,
+    onClick: () -> Unit
+) {
+    val book = books.getOrNull(state.bookIndex) ?: return
+    val ref = buildString {
+        append("${book.name} ${state.chapter}")
+        if (state.verse > 1) append(":${state.verse}")
+    }
+    ElevatedCard(
+        onClick = onClick,
+        modifier = Modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.medium,
+        colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                Icons.AutoMirrored.Filled.MenuBook,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                modifier = Modifier.size(22.dp)
+            )
+            Spacer(Modifier.width(12.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    "Continuer la lecture",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+                Text(
+                    ref,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            }
+            Icon(
+                Icons.Filled.ArrowForward,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onPrimaryContainer
+            )
+        }
     }
 }
 
